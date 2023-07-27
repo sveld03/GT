@@ -164,7 +164,8 @@ def genGraph():
     # ep = float(epNtr.get())
     # alph = float(alphNtr.get())
 
-    lm = [[-1, -1, -1, -1, -1], [-1, -1], [-1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1, -1]]
+    # lambda matrix
+    lm = [[-2, -2, -2, -2, -2], [-2, -2], [-2, -2, -2], [-2, -2, -2, -2], [-2, -2, -2, -2, -2]]
 
     if prog.entries[7].get() == '':
         lm[1].append(0)
@@ -205,15 +206,22 @@ def genGraph():
     def ext_rein(b10, b20, b30, b40, epsilon, alpha, dataPoints):
 
         # store initial behavioral probabilities
-        b_values = [[b10], [b20], [b30], [b40]]
+        bvals = [[b10], [b20], [b30], [b40]]
 
         # recursively calculate subsequent probabilty data points for each behavior
         for num in range(dataPoints):
             
-            b1n = b_values[0][-1]
-            b2n = b_values[1][-1]
-            b3n = b_values[2][-1]
-            b4n = b_values[3][-1]
+            b1n = bvals[0][-1]
+            b2n = bvals[1][-1]
+            b3n = bvals[2][-1]
+            b4n = bvals[3][-1]
+
+            for y in range(4):
+                ext = bvals[y][-1] * epsilon
+                rein = (1 - bvals[y][-1]) * alpha
+                for z in range(4):
+                    if (lm[y+1][z+1] == -2 or lm[y+1][z+1] >= 0 or bvals[z][-1] - bvals[z][-2] >= 0):
+                        
 
             # behavior 1
             b1ext = b1n * epsilon
