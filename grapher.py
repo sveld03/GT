@@ -84,26 +84,6 @@ for num in range(4):
     behaviors[num].append(Entry(root, width = 10))
     behaviors[num][1].grid(column = 1, row = num + 5)
 
-# b1Lbl = Label(root, text = "Behavior 1: ")
-# b1Lbl.grid(column = 0, row = 5)
-# b1Ntr = Entry(root, width = 10)
-# b1Ntr.grid(column = 1, row = 5)
-
-# b2Lbl = Label(root, text = "Behavior 2: ")
-# b2Lbl.grid(column = 0, row = 6)
-# b2Ntr = Entry(root, width = 10)
-# b2Ntr.grid(column = 1, row = 6)
-
-# b3Lbl = Label(root, text = "Behavior 3: ")
-# b3Lbl.grid(column = 0, row = 7)
-# b3Ntr = Entry(root, width = 10)
-# b3Ntr.grid(column = 1, row = 7)
-
-# b4Lbl = Label(root, text = "Behavior 4: ")
-# b4Lbl.grid(column = 0, row = 8)
-# b4Ntr = Entry(root, width = 10)
-# b4Ntr.grid(column = 1, row = 8)
-
 # lambda matrix title
 lambdaLbl = Label(root, text = "Lambda Matrix")
 lambdaLbl.grid(column = 0, row = 9)
@@ -155,115 +135,99 @@ iterNtr.grid(column=5, row=2)
 
 # function to generate and display graph when submit is clicked
 def genGraph():
-    
-    points = 50
-    ep = .06
-    alph = .0
-
-    # points = int(dataNtr.get())
-    # ep = float(epNtr.get())
-    # alph = float(alphNtr.get())
 
     # lambda matrix
-    lm = [[-2, -2, -2, -2, -2], [-2, -2], [-2, -2, -2], [-2, -2, -2, -2], [-2, -2, -2, -2, -2]]
+    lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
-    if prog.entries[7].get() == '':
-        lm[1].append(0)
-    else:
-        lm[1].append(float(prog.entries[7].get()))
+    if prog.entries[7].get() != '':
+        lm[1][2] = float(prog.entries[7].get())
+        lm[2][1] = float(prog.entries[7].get())
 
-    if prog.entries[8].get() == '':
-        lm[1].append(0)
-    else:
-        lm[1].append(float(prog.entries[8].get()))
+    if prog.entries[8].get() != '':
+        lm[1][3] = float(prog.entries[8].get())
+        lm[3][1] = float(prog.entries[8].get())
 
-    if prog.entries[9].get() == '':
-        lm[1].append(0)
-    else:
-        lm[1].append(float(prog.entries[9].get()))
+    if prog.entries[9].get() != '':
+        lm[1][4] = float(prog.entries[9].get())
+        lm[4][1] = float(prog.entries[9].get())
 
-    if prog.entries[13].get() == '':
-        lm[2].append(0)
-    else:
-        lm[2].append(float(prog.entries[13].get()))
+    if prog.entries[13].get() != '':
+        lm[2][3] = float(prog.entries[13].get())
+        lm[3][2] = float(prog.entries[13].get())
 
-    if prog.entries[14].get() == '':
-        lm[2].append(0)
-    else:
-        lm[2].append(float(prog.entries[14].get()))
+    if prog.entries[14].get() != '':
+        lm[2][4] = float(prog.entries[14].get())
+        lm[4][2] = float(prog.entries[14].get())
 
-    if prog.entries[19].get() == '':
-        lm[3].append(0)
-    else:
-        lm[3].append(float(prog.entries[19].get()))
+    if prog.entries[19].get() != '':
+        lm[3][4] = float(prog.entries[19].get())
+        lm[4][3] = float(prog.entries[19].get())
 
-    # for r in range(5):
-    #     for c in range(5):
-    #         lamVal = Label(root, text = str(lm[r][c]))
-    #         lamVal.grid(column = c + 6, row = r)
+    for row in range(5):
+        for column in range(5):
+            if lm[row][column] < -1 or lm[row][column] > 1:
+                errMessage = Label(root, text = "lamda values should be between -1 and 1.", fg = "red")
+                errMessage.grid(column = 1, row = 10)
 
     # generate 2D array storing probability data points over time for all behaviors
-    def ext_rein(b10, b20, b30, b40, epsilon, alpha, dataPoints):
+    def generate(b10, b20, b30, b40, epsilon, alpha, dataPoints):
 
         # store initial behavioral probabilities
-        bvals = [[b10], [b20], [b30], [b40]]
+        bvals = [[-2], [b10], [b20], [b30], [b40]]
 
         # recursively calculate subsequent probabilty data points for each behavior
         for num in range(dataPoints):
+
+            # extinction matrix (quantity of decrease by extinction for each behavior)
+            em = [0]
+
+            # reinforcement matrix (quantity of increase by reinforcement for each behavior)
+            am = [0]
+
+            # interaction matrix (the interaction effects between each pair of behaviors, before summation)
+            # encapsulates equations 3 (resurgence) and 4 (automatic chaining)
+            im = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+
+            # populate matrices with values for this cycle
+            for y in range(1, 5):
+                em.append(-bvals[y][-1] * epsilon)
+                am.append((1 - bvals[y][-1]) * alpha)
+                for z in range(1, 5):
+                    if (y != z and len(bvals[z]) >= 2 and lm[y][z] >= -1 and lm[y][z] <= 1):
+                        if (lm[y][z] < 0 and bvals[z][-1] - bvals[z][-2] < 0):
+                            im[y][z] = (1 - bvals[y][-1]) * -lm[y][z] * bvals[z][-1]
+                        if (lm[y][z] > 0 and bvals[z][-1] - bvals[z][-2] > 0):
+                            im[y][z] = (1 - bvals[y][-1]) * lm[y][z] * bvals[z][-1]
+                    # print(im[y][z], end=" ")
+                # print()
             
-            b1n = bvals[0][-1]
-            b2n = bvals[1][-1]
-            b3n = bvals[2][-1]
-            b4n = bvals[3][-1]
+            for y in range(1, 5):
+                epEffect = em[y]
+                alphEffect = am[y]
+                intEffect = 0
+                for z in range(1, 5):
+                    intEffect += im[y][z]
+                cur = bvals[y][-1]
+                change = epEffect + alphEffect + intEffect
+                bNext = cur + change
+                bvals[y].append(bNext)
+        
+        return bvals
 
-            for y in range(4):
-                ext = bvals[y][-1] * epsilon
-                rein = (1 - bvals[y][-1]) * alpha
-                for z in range(4):
-                    if (lm[y+1][z+1] == -2 or lm[y+1][z+1] >= 0 or bvals[z][-1] - bvals[z][-2] >= 0):
-                        
+    b10 = float(behaviors[0][1].get())
+    b20 = float(behaviors[1][1].get())
+    b30 = float(behaviors[2][1].get())
+    b40 = float(behaviors[3][1].get())
 
-            # behavior 1
-            b1ext = b1n * epsilon
-            b1rein = (1 - b1n) * alpha
-            b1res = ((1 - b1n) * -lm[1][2] * b2n) + ((1 - b1n) * -lm[1][3] * b3n) + ((1 - b1n) * -lm[1][4] * b4n)
-            # b1chain = ((1 - b1n) * l12 * b2n) + ((1 - b1n) * l13 * b3n) + ((1 - b1n) * l14 * b4n)
-            next_b1 = b1n - b1ext + b1rein + b1res
-            b_values[0].append(next_b1)
+    points = int(dataNtr.get())
+    ep = float(epNtr.get())
+    alph = float(alphNtr.get())
 
-            # behavior 2
-            b2ext = b2n * epsilon
-            b2rein = (1 - b2n) * alpha
-            b2res = ((1 - b2n) * -lm[1][2] * b1n) + ((1 - b2n) * -lm[2][3] * b3n) + ((1 - b2n) * -lm[2][4] * b4n)
-            next_b2 = b2n - b2ext + b2rein + b2res
-            b_values[1].append(next_b2)
-
-            # behavior 3
-            b3ext = b3n * epsilon
-            b3rein = (1 - b3n) * alpha
-            b3res = ((1 - b3n) * -lm[2][3] * b2n) + ((1 - b3n) * -lm[1][3] * b1n) + ((1 - b3n) * -lm[3][4] * b4n)
-            next_b3 = b3n - b3ext + b3rein + b3res
-            b_values[2].append(next_b3)
-
-            # behavior 4
-            b4ext = b4n * epsilon
-            b4rein = (1 - b4n) * alpha
-            b4res = ((1 - b4n) * -lm[1][4] * b1n) + ((1 - b4n) * -lm[2][4] * b2n) + ((1 - b4n) * -lm[3][4] * b3n)
-            next_b4 = b4n - b4ext + b4rein + b4res
-            b_values[3].append(next_b4)
-
-        return b_values
-
-    b10 = .4
-    b20 = .01
-    b30 = .1
-    b40 = .01
-
-    b_values = ext_rein(b10, b20, b30, b40, ep, alph, points)
-    plt.plot(range(len(b_values[0])), b_values[0], 'b', linestyle='solid', label="Behavior 1")
-    plt.plot(range(len(b_values[1])), b_values[1], 'r', linestyle='solid', label="Behavior 2")
-    plt.plot(range(len(b_values[2])), b_values[2], 'g', linestyle='solid', label="Behavior 3")
-    plt.plot(range(len(b_values[3])), b_values[3], 'y', linestyle='solid', label="Behavior 4")
+    b_values = generate(b10, b20, b30, b40, ep, alph, points)
+    plt.plot(range(len(b_values[1])), b_values[1], 'b', linestyle='solid', label="Behavior 1")
+    plt.plot(range(len(b_values[2])), b_values[2], 'r', linestyle='solid', label="Behavior 2")
+    plt.plot(range(len(b_values[3])), b_values[3], 'g', linestyle='solid', label="Behavior 3")
+    plt.plot(range(len(b_values[4])), b_values[4], 'y', linestyle='solid', label="Behavior 4")
     plt.xlabel('Time')
     plt.ylabel('Probability of Behavior')
     plt.legend()
