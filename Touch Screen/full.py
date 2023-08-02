@@ -1,16 +1,22 @@
-# touchscreen.py
+# # touchscreen.py
 
-# graphics library
-from tkinter import *
+# # import modeA
 
-# # data visualization
-# import matplotlib as mpl
-# import matplotlib.pyplot as plt
-# import numpy as np
+# # graphics library
+# from tkinter import *
 
-import random
+# # # data visualization
+# # import matplotlib as mpl
+# # import matplotlib.pyplot as plt
+# # import numpy as np
 
-random.seed(1965)
+# import random
+
+# random.seed(1965)
+
+from utilities import *
+
+from modeA import *
 
 class Game(Tk):
     def __init__(self):
@@ -118,8 +124,10 @@ class Game(Tk):
 
     # Mode A: simplest version, blue button moves dot right
     def modeA(self):
-        self.game_mode = "A"
-        self.congrats.place_forget()
+        gameA = ModeA()
+        gameA.mainloop()
+        # self.game_mode = "A"
+        # self.congrats.place_forget()
 
     # Mode B: a specific sequence of 4 button presses moves dot right
     def modeB(self):
