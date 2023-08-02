@@ -8,6 +8,10 @@ from tkinter import *
 # import matplotlib.pyplot as plt
 # import numpy as np
 
+import random
+
+random.seed(1965)
+
 class Game(Tk):
     def __init__(self):
         super().__init__()
@@ -23,6 +27,9 @@ class Game(Tk):
         # instructions
         subtitle = Label(self, text = "Choose game mode above, then click the buttons to get the dot to the right side of the screen. Have fun! :)")
         subtitle.place(anchor='nw')
+
+        self.finish = Label(self, text="Finish Line")
+        self.finish.place(x=1235, y=125)
 
         self.congrats = Label(self, text="Congratulations! You completed the game! Exit or try another mode.", bg='green')
 
@@ -44,6 +51,8 @@ class Game(Tk):
                          self.init_x2, self.init_y2,
                          outline='red', fill='red')
         
+        self.line = self.canvas.create_line(1225, 0, 1225, 500)
+        
         # self.update_dot_position("<Configure>")
         
         self.game_mode = None
@@ -56,6 +65,15 @@ class Game(Tk):
         self.move_C2 = ['r', 'y']
         self.input_seqB = []
         self.input_seqC = []
+
+        self.blueCounter1 = 4
+        self.blueDecrease1 = 1
+        
+        self.redCounter1 = 4
+        self.redDecrease1 = 1
+        
+        self.yellowCounter1 = 4
+        self.yellowDecrease1 = 1
 
         # self.bind("<Configure>", self.on_resize)
 
@@ -94,6 +112,7 @@ class Game(Tk):
         game_menu.add_command(label='A', command=self.modeA)
         game_menu.add_command(label='B', command=self.modeB)
         game_menu.add_command(label='C', command=self.modeC)
+        game_menu.add_command(label='1', command=self.mode1)
 
         menubar.add_cascade(label="Game Modes", menu=game_menu)
 
@@ -110,6 +129,10 @@ class Game(Tk):
     # Mode C: double-click green for 1st half, red-yellow for 2nd half
     def modeC(self):
         self.game_mode = "C"
+        self.congrats.place_forget()
+
+    def mode1(self):
+        self.game_mode = "1"
         self.congrats.place_forget()
 
     def check_completion(self):
@@ -141,6 +164,7 @@ class Game(Tk):
 
     # blue button
     def move_blue(self):
+        
         if self.game_mode == "A":
             self.move_right()
 
@@ -154,8 +178,17 @@ class Game(Tk):
         elif self.game_mode == "C":
             self.input_seqC.append('b')
 
+        elif self.game_mode == "1":
+            randVal = random.randrange(1, self.blueCounter1)
+            if randVal == 1 and self.blueCounter1 < 10:
+                self.move_right()
+            self.blueDecrease1 += 1
+            if self.blueDecrease1 % 4 == 0:
+                self.blueCounter1 += 1
+
     # red button
     def move_red(self):
+
         if self.game_mode == "A":
             self.move_left()
 
@@ -165,6 +198,14 @@ class Game(Tk):
 
         elif self.game_mode == "C":
             self.input_seqC.append('r')
+
+        elif self.game_mode == "1":
+            randVal = random.randrange(1, self.redCounter1)
+            if randVal == 1 and self.redCounter1 < 10:
+                self.move_right()
+            self.redDecrease1 += 1
+            if self.redDecrease1 % 4 == 0:
+                self.redCounter1 += 1
 
     # green button
     def move_green(self):
@@ -182,8 +223,14 @@ class Game(Tk):
                 self.move_right()
                 self.input_seqC = []
 
+        elif self.game_mode == "1":
+            randVal = random.randrange(1, 3)
+            if randVal == 1:
+                self.move_right()
+
     # yellow button
     def move_yellow(self):
+
         if self.game_mode == "A":
             self.move_down()
 
@@ -196,6 +243,14 @@ class Game(Tk):
             if self.input_seqC[-2:] == self.move_C2 and self.canvas.coords(self.dot)[0] > 575:
                 self.move_right()
                 self.move_right()
+
+        elif self.game_mode == "1":
+            randVal = random.randrange(1, self.yellowCounter1)
+            if randVal == 1 and self.yellowCounter1 < 10:
+                self.move_right()
+            self.yellowDecrease1 += 1
+            if self.yellowDecrease1 % 4 == 0:
+                self.yellowCounter1 += 1
 
 if __name__ == "__main__":
     game = Game()

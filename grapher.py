@@ -141,66 +141,66 @@ def genGraph():
     lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
     # enforces symmetry
-    # if prog.entries[7].get() != '':
-    #     lm[1][2] = float(prog.entries[7].get())
-    #     lm[2][1] = float(prog.entries[7].get())
-
-    # if prog.entries[8].get() != '':
-    #     lm[1][3] = float(prog.entries[8].get())
-    #     lm[3][1] = float(prog.entries[8].get())
-
-    # if prog.entries[9].get() != '':
-    #     lm[1][4] = float(prog.entries[9].get())
-    #     lm[4][1] = float(prog.entries[9].get())
-
-    # if prog.entries[13].get() != '':
-    #     lm[2][3] = float(prog.entries[13].get())
-    #     lm[3][2] = float(prog.entries[13].get())
-
-    # if prog.entries[14].get() != '':
-    #     lm[2][4] = float(prog.entries[14].get())
-    #     lm[4][2] = float(prog.entries[14].get())
-
-    # if prog.entries[19].get() != '':
-    #     lm[3][4] = float(prog.entries[19].get())
-    #     lm[4][3] = float(prog.entries[19].get())
-
-    # allows for asymmetry
     if prog.entries[7].get() != '':
         lm[1][2] = float(prog.entries[7].get())
-    
-    if prog.entries[11].get() != '':
-        lm[2][1] = float(prog.entries[11].get())
+        lm[2][1] = float(prog.entries[7].get())
 
     if prog.entries[8].get() != '':
         lm[1][3] = float(prog.entries[8].get())
-
-    if prog.entries[16].get() != '':
-        lm[3][1] = float(prog.entries[16].get())
+        lm[3][1] = float(prog.entries[8].get())
 
     if prog.entries[9].get() != '':
         lm[1][4] = float(prog.entries[9].get())
-
-    if prog.entries[21].get() != '':
-        lm[4][1] = float(prog.entries[21].get())
+        lm[4][1] = float(prog.entries[9].get())
 
     if prog.entries[13].get() != '':
         lm[2][3] = float(prog.entries[13].get())
-
-    if prog.entries[17].get() != '':
-        lm[3][2] = float(prog.entries[17].get())
+        lm[3][2] = float(prog.entries[13].get())
 
     if prog.entries[14].get() != '':
         lm[2][4] = float(prog.entries[14].get())
-    
-    if prog.entries[22].get() != '':
-        lm[4][2] = float(prog.entries[22].get())
+        lm[4][2] = float(prog.entries[14].get())
 
     if prog.entries[19].get() != '':
         lm[3][4] = float(prog.entries[19].get())
+        lm[4][3] = float(prog.entries[19].get())
 
-    if prog.entries[23].get() != '':
-        lm[4][3] = float(prog.entries[23].get())
+    # # allows for asymmetry
+    # if prog.entries[7].get() != '':
+    #     lm[1][2] = float(prog.entries[7].get())
+    
+    # if prog.entries[11].get() != '':
+    #     lm[2][1] = float(prog.entries[11].get())
+
+    # if prog.entries[8].get() != '':
+    #     lm[1][3] = float(prog.entries[8].get())
+
+    # if prog.entries[16].get() != '':
+    #     lm[3][1] = float(prog.entries[16].get())
+
+    # if prog.entries[9].get() != '':
+    #     lm[1][4] = float(prog.entries[9].get())
+
+    # if prog.entries[21].get() != '':
+    #     lm[4][1] = float(prog.entries[21].get())
+
+    # if prog.entries[13].get() != '':
+    #     lm[2][3] = float(prog.entries[13].get())
+
+    # if prog.entries[17].get() != '':
+    #     lm[3][2] = float(prog.entries[17].get())
+
+    # if prog.entries[14].get() != '':
+    #     lm[2][4] = float(prog.entries[14].get())
+    
+    # if prog.entries[22].get() != '':
+    #     lm[4][2] = float(prog.entries[22].get())
+
+    # if prog.entries[19].get() != '':
+    #     lm[3][4] = float(prog.entries[19].get())
+
+    # if prog.entries[23].get() != '':
+    #     lm[4][3] = float(prog.entries[23].get())
 
     for row in range(5):
         for column in range(5):
