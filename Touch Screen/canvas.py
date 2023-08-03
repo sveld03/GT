@@ -19,15 +19,15 @@ class canvas(Tk):
         self.mode_label = Label(self, text='')
         self.mode_label.place(x=800, y=75)
 
-        self.canvas = Canvas(self, bg="white", width=1250, height = 500)
+        self.canvas = Canvas(self, bg="white", width=1250, height = 450)
         self.canvas.place(x=50, y=150)
 
         # initial position of dot
         dot_radius = 20
         self.init_x1 = 50 - dot_radius
-        self.init_y1 = 250 - dot_radius
+        self.init_y1 = 225 - dot_radius
         self.init_x2 = 50 + dot_radius
-        self.init_y2 = 250 + dot_radius
+        self.init_y2 = 225 + dot_radius
 
         # create dot
         self.dot = self.canvas.create_oval(self.init_x1, self.init_y1,
@@ -61,15 +61,17 @@ class canvas(Tk):
         self.game_menu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Game Modes", menu=self.game_menu)
     
+    def reset(self):
+        x1, y1, x2, y2 = self.canvas.coords(self.dot)
+        dx = self.init_x1 - x1
+        dy = self.init_y1 - y1
+        self.canvas.move(self.dot, dx, dy)
+
     def check_completion(self):
         if self.canvas.coords(self.dot)[2] >= 1225:
             self.game_mode = None
-            self.congrats.place(x=50, y=675)
-
-            x1, y1, x2, y2 = self.canvas.coords(self.dot)
-            dx = self.init_x1 - x1
-            dy = self.init_y1 - y1
-            self.canvas.move(self.dot, dx, dy)
+            self.congrats.place(x=50, y=625)
+            self.reset()
 
     def move_left(self):
         if self.canvas.coords(self.dot)[0] > 0:
