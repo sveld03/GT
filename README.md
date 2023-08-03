@@ -1,5 +1,5 @@
 # GT
-This repo has 2 primary components: a 1-player game called the "Hard Easy Game" meant to be played on a touchscreen monitor in behavioral experiments, and the Generativity Grapher 2.0. <br /> <br />
+This repo has 2 primary components: a 1-player game called the "Hard Easy Game" meant to be played on a touchscreen monitor in behavioral experiments, and the Generativity Grapher 2.0. <br />
 
 The goal of the Hard Easy Game is simple: use the buttons to move the dot from one side of the screen to the other. <br /> 
 However, there are a variety of game modes, and in each mode there is a different pattern of button-pressing behavior that will generate successful results. The player is not informed of the pattern. <br />
