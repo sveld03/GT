@@ -1,23 +1,43 @@
-from utilities import *
+from canvas import *
 
-from main import Game
+class ModeA:
+    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down):
 
-class ModeA(Tk):
-    def __init__(self):
-        # super().__init__()
+        self.btnB = btnB
+        self.btnR = btnR
+        self.btnG = btnG
+        self.btnY = btnY
 
-        # self.title("The Hard Easy Game: Mode A")
-
-        # # set geometry (widthxheight)
-        # self.geometry('1360x710')
         self.assign_btnB()
         self.assign_btnR()
         self.assign_btnG()
         self.assign_btnY()
 
-    def assign_btnB(self):
-        Game.btnB.config(command=self.move_blue)
+        self.move_left = move_left
+        self.move_right = move_right
+        self.move_up = move_up
+        self.move_down = move_down
 
-# if __name__ == "__main__":
-#     game = ModeA()
-#     game.mainloop()
+    def assign_btnB(self):
+        self.btnB.config(command=self.move_blue)
+
+    def assign_btnR(self):
+        self.btnR.config(command=self.move_red)
+
+    def assign_btnG(self):
+        self.btnG.config(command=self.move_green)
+
+    def assign_btnY(self):
+        self.btnY.config(command=self.move_yellow)
+
+    def move_blue(self):
+        self.move_right()
+
+    def move_red(self):
+        self.move_left()
+    
+    def move_green(self):
+        self.move_up()
+
+    def move_yellow(self):
+        self.move_down()
