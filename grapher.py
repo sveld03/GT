@@ -2,9 +2,10 @@
 from tkinter import *
 
 # data visualization
-import matplotlib as mpl
+
+# import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
+# import numpy as np
 
 # create root window
 root = Tk()
@@ -29,9 +30,7 @@ def helpClicked():
 #     behav1Ntr.grid(column = 1, row = 1)
 #     lbl.configure(text = prob + behav1 + behav1Ntr)
 
-# adding menu bar in root window
-# new item in menu bar labelled as "New"
-# adding more items in menu bar
+# menu: help + # of behaviors
 menu = Menu(root)
 lvl1 = Menu(menu)
 lvl2 = Menu(lvl1)
