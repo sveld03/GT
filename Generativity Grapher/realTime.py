@@ -1,0 +1,1 @@
+# real-time generativity grapher: update parameters at frequent intervals using feedback from frequency profile, predict a moving window
