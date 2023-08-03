@@ -4,6 +4,7 @@ from modeA import ModeA
 from modeB import ModeB
 from modeC import ModeC
 from mode1 import Mode1
+from mode2 import Mode2
 
 class Game:
     def __init__(self, screen):
@@ -16,6 +17,7 @@ class Game:
         self.screen.game_menu.add_command(label='B', command=self.modeB)
         self.screen.game_menu.add_command(label='C', command=self.modeC)
         self.screen.game_menu.add_command(label='1', command=self.mode1)
+        self.screen.game_menu.add_command(label='2', command=self.mode2)
 
     # Mode A: simplest version, blue button moves dot right
     def modeA(self):
@@ -41,6 +43,12 @@ class Game:
     def mode1(self):
         self.screen.mode_label.config(text="Game Mode 1")
         self.game_mode = Mode1(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down)
+        self.screen.congrats.place_forget()
+
+    # Mode C: probability swap between two buttons
+    def mode2(self):
+        self.screen.mode_label.config(text="Game Mode 2")
+        self.game_mode = Mode2(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, self.screen)
         self.screen.congrats.place_forget()
 
 if __name__ == "__main__":
