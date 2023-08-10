@@ -1,8 +1,6 @@
 from tkinter import *
 
 import sqlite3
-freqprof = sqlite3.connect('freqprof.db')
-Cursor = freqprof.cursor()
 
 from time import *
 
@@ -10,8 +8,6 @@ from time import *
 # table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
 
 # Cursor.execute('CREATE TABLE FreqProf (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 INTEGER, B2 INTEGER, B3 INTEGER, B4 INTEGER, B5 INTEGER, time REAL)')
-
-
 
 class canvas(Tk):
     def __init__(self):
@@ -29,6 +25,17 @@ class canvas(Tk):
         # instructions
         subtitle = Label(self, text = "Choose game mode above, then click the buttons to get the dot to the right side of the screen. Have fun! :)")
         subtitle.place(anchor='nw')
+
+        self.nameLbl = Label(self, text="Enter your name here: ")
+        self.nameLbl.place(x=750, y=25)
+        self.nameNtr = Entry(self, width=10)
+        self.nameNtr.place(x=880, y=25)
+
+        self.trialLbl = Label(self, text = "Trial: ")
+        self.trialLbl.place(x=1000, y=25)
+        self.trialNtr = Entry(self, width=10)
+        self.trialNtr.place(x=1050, y=25)
+        self.trialNtr.insert(0, '1')
 
         self.mode_label = Label(self, text='')
         self.mode_label.place(x=800, y=75)
@@ -81,20 +88,21 @@ class canvas(Tk):
         dy = self.init_y1 - y1
         self.canvas.move(self.dot, dx, dy)
 
-    def check_completion(self):
+    def check_completion(self, conn):
         if self.canvas.coords(self.dot)[2] >= 1225:
             self.game_mode = None
             self.congrats.place(x=50, y=625)
             self.reset()
+            conn.close()
 
     def move_left(self):
         if self.canvas.coords(self.dot)[0] > 0:
             self.canvas.move(self.dot, -20, 0)
 
-    def move_right(self):
+    def move_right(self, conn):
         if self.canvas.coords(self.dot)[2] < 1250:
             self.canvas.move(self.dot, 20, 0)
-            self.check_completion()
+            self.check_completion(conn)
 
     def move_up(self):
         if self.canvas.coords(self.dot)[1] > 0:
@@ -112,19 +120,19 @@ class Timer:
         elapsed = current_time - self.start_time
         return elapsed
 
-def record_blue(timer):
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time) VALUES(1, 0, 0, 0, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+def record_blue(Cursor, freqprof, timer, game_mode, name, trial):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(1, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
     freqprof.commit()
 
-def record_red(timer):
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, time) VALUES(0, 1, 0, 0, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+def record_red(Cursor, freqprof, timer, game_mode, name, trial):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 1, 0, 0, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
     freqprof.commit()
 
-def record_green(timer):
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, time) VALUES(0, 0, 1, 0, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+def record_green(Cursor, freqprof, timer, game_mode, name, trial):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 1, 0, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
     freqprof.commit()
 
-def record_yellow(timer):
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, time) VALUES(0, 0, 0, 1, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+def record_yellow(Cursor, freqprof, timer, game_mode, name, trial):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 1, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
     freqprof.commit()
         
