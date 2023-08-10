@@ -84,11 +84,18 @@ for num in range(4):
     behaviors[num][1].grid(column = 1, row = num + 5)
 
 # lambda matrix title
-lambdaLbl = Label(root, text = "Lambda Matrix")
-lambdaLbl.grid(column = 0, row = 9)
+lambdaLbl = Label(root, text = "Lambda Matrix", pady=15)
+lambdaLbl.grid(column = 1, row = 9)
+
+# independent and dependent labels
+indep = Label(root, text="Independent")
+indep.grid(column = 1, row = 10)
+
+dep = Label(root, text = "Dependent")
+dep.grid(column = 0, row = 11)
 
 # lambda matrix
-class app(Frame):
+class matrix(Frame):
     def __init__(self, master = None):
         Frame.__init__(self, master)
         self.grid()
@@ -119,7 +126,8 @@ class app(Frame):
                 counter += 1
 
 # display lambda matrix
-prog = app()
+data = matrix()
+data.grid(column = 1, row = 11)
 
 # data points
 dataLbl = Label(root, text = "Data Points: ")
@@ -139,67 +147,42 @@ def genGraph():
     # lambda matrix
     lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
-    # enforces symmetry
-    if prog.entries[7].get() != '':
-        lm[1][2] = float(prog.entries[7].get())
-        lm[2][1] = float(prog.entries[7].get())
-
-    if prog.entries[8].get() != '':
-        lm[1][3] = float(prog.entries[8].get())
-        lm[3][1] = float(prog.entries[8].get())
-
-    if prog.entries[9].get() != '':
-        lm[1][4] = float(prog.entries[9].get())
-        lm[4][1] = float(prog.entries[9].get())
-
-    if prog.entries[13].get() != '':
-        lm[2][3] = float(prog.entries[13].get())
-        lm[3][2] = float(prog.entries[13].get())
-
-    if prog.entries[14].get() != '':
-        lm[2][4] = float(prog.entries[14].get())
-        lm[4][2] = float(prog.entries[14].get())
-
-    if prog.entries[19].get() != '':
-        lm[3][4] = float(prog.entries[19].get())
-        lm[4][3] = float(prog.entries[19].get())
-
-    # # allows for asymmetry
-    # if prog.entries[7].get() != '':
-    #     lm[1][2] = float(prog.entries[7].get())
+    # allows for asymmetry
+    if data.entries[7].get() != '':
+        lm[1][2] = float(data.entries[7].get())
     
-    # if prog.entries[11].get() != '':
-    #     lm[2][1] = float(prog.entries[11].get())
+    if data.entries[11].get() != '':
+        lm[2][1] = float(data.entries[11].get())
 
-    # if prog.entries[8].get() != '':
-    #     lm[1][3] = float(prog.entries[8].get())
+    if data.entries[8].get() != '':
+        lm[1][3] = float(data.entries[8].get())
 
-    # if prog.entries[16].get() != '':
-    #     lm[3][1] = float(prog.entries[16].get())
+    if data.entries[16].get() != '':
+        lm[3][1] = float(data.entries[16].get())
 
-    # if prog.entries[9].get() != '':
-    #     lm[1][4] = float(prog.entries[9].get())
+    if data.entries[9].get() != '':
+        lm[1][4] = float(data.entries[9].get())
 
-    # if prog.entries[21].get() != '':
-    #     lm[4][1] = float(prog.entries[21].get())
+    if data.entries[21].get() != '':
+        lm[4][1] = float(data.entries[21].get())
 
-    # if prog.entries[13].get() != '':
-    #     lm[2][3] = float(prog.entries[13].get())
+    if data.entries[13].get() != '':
+        lm[2][3] = float(data.entries[13].get())
 
-    # if prog.entries[17].get() != '':
-    #     lm[3][2] = float(prog.entries[17].get())
+    if data.entries[17].get() != '':
+        lm[3][2] = float(data.entries[17].get())
 
-    # if prog.entries[14].get() != '':
-    #     lm[2][4] = float(prog.entries[14].get())
+    if data.entries[14].get() != '':
+        lm[2][4] = float(data.entries[14].get())
     
-    # if prog.entries[22].get() != '':
-    #     lm[4][2] = float(prog.entries[22].get())
+    if data.entries[22].get() != '':
+        lm[4][2] = float(data.entries[22].get())
 
-    # if prog.entries[19].get() != '':
-    #     lm[3][4] = float(prog.entries[19].get())
+    if data.entries[19].get() != '':
+        lm[3][4] = float(data.entries[19].get())
 
-    # if prog.entries[23].get() != '':
-    #     lm[4][3] = float(prog.entries[23].get())
+    if data.entries[23].get() != '':
+        lm[4][3] = float(data.entries[23].get())
 
     for row in range(5):
         for column in range(5):

@@ -1,8 +1,22 @@
 from tkinter import *
 
+import sqlite3
+freqprof = sqlite3.connect('freqprof.db')
+Cursor = freqprof.cursor()
+
+from time import *
+
+# table name: FreqProf
+# table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
+
+# Cursor.execute('CREATE TABLE FreqProf (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 INTEGER, B2 INTEGER, B3 INTEGER, B4 INTEGER, B5 INTEGER, time REAL)')
+
+
+
 class canvas(Tk):
     def __init__(self):
         super().__init__()
+        
 
         # game title
         self.title("The Hard Easy Game")
@@ -89,3 +103,28 @@ class canvas(Tk):
     def move_down(self):
         if self.canvas.coords(self.dot)[3] < 500:
             self.canvas.move(self.dot, 0, 20)
+
+class Timer:
+    def __init__(self):
+        self.start_time = time()
+    def time_elapsed(self):
+        current_time = time()
+        elapsed = current_time - self.start_time
+        return elapsed
+
+def record_blue(timer):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time) VALUES(1, 0, 0, 0, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+    freqprof.commit()
+
+def record_red(timer):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, time) VALUES(0, 1, 0, 0, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+    freqprof.commit()
+
+def record_green(timer):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, time) VALUES(0, 0, 1, 0, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+    freqprof.commit()
+
+def record_yellow(timer):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, time) VALUES(0, 0, 0, 1, ?, ?, ?)', ('A', 'Steven', timer.time_elapsed()))
+    freqprof.commit()
+        

@@ -1,7 +1,7 @@
 from canvas import *
 
 class ModeB:
-    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down):
+    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down, timer):
 
         self.btnB = btnB
         self.btnR = btnR
@@ -21,6 +21,8 @@ class ModeB:
         self.input_seq = []
         self.move_seq = ['g', 'y', 'r', 'b']
 
+        self.timer = timer
+
     def assign_btnB(self):
         self.btnB.config(command=self.move_blue)
 
@@ -39,15 +41,19 @@ class ModeB:
         if self.input_seq[-4:] == self.move_seq:
             for num in range(4):
                 self.move_right()
+        record_blue(self.timer)
 
     def move_red(self):
         self.input_seq.append('r')
         self.move_down()
+        record_red(self.timer)
     
     def move_green(self):
         self.input_seq.append('g')
         self.move_down()
+        record_green(self.timer)
 
     def move_yellow(self):
         self.input_seq.append('y')
         self.move_up()
+        record_yellow(self.timer)

@@ -23,32 +23,40 @@ class Game:
     def modeA(self):
         self.screen.reset()
         self.screen.mode_label.config(text="Game Mode A")
-        self.game_mode = ModeA(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down)
+        timer = Timer()
+        self.game_mode = ModeA(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, timer)
         self.screen.congrats.place_forget()
 
     # Mode B: a specific sequence of 4 button presses moves dot right
     def modeB(self):
         self.screen.reset()
         self.screen.mode_label.config(text="Game Mode B")
-        self.game_mode = ModeB(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down)
+        timer = Timer()
+        self.game_mode = ModeB(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, timer)
         self.screen.congrats.place_forget()
 
     # Mode C: double-click green for 1st half, red-yellow for 2nd half
     def modeC(self):
+        self.screen.reset()
         self.screen.mode_label.config(text="Game Mode C")
-        self.game_mode = ModeC(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, self.screen)
+        timer = Timer()
+        self.game_mode = ModeC(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, self.screen, timer)
         self.screen.congrats.place_forget()
 
     # Mode 1: simplest probabilistic game
     def mode1(self):
+        self.screen.reset()
         self.screen.mode_label.config(text="Game Mode 1")
-        self.game_mode = Mode1(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down)
+        timer = Timer()
+        self.game_mode = Mode1(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, timer)
         self.screen.congrats.place_forget()
 
     # Mode C: probability swap between two buttons
     def mode2(self):
+        self.screen.reset()
         self.screen.mode_label.config(text="Game Mode 2")
-        self.game_mode = Mode2(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, self.screen)
+        timer = Timer()
+        self.game_mode = Mode2(self.screen.btnB, self.screen.btnR, self.screen.btnG, self.screen.btnY, self.screen.move_left, self.screen.move_right, self.screen.move_up, self.screen.move_down, self.screen, timer)
         self.screen.congrats.place_forget()
 
 if __name__ == "__main__":

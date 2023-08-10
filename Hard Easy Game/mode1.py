@@ -3,7 +3,7 @@ from canvas import *
 import random
 
 class Mode1:
-    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down):
+    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down, timer):
 
         self.btnB = btnB
         self.btnR = btnR
@@ -29,6 +29,8 @@ class Mode1:
         self.yellowCounter1 = 4
         self.yellowDecrease1 = 1
 
+        self.timer = timer
+
     def assign_btnB(self):
         self.btnB.config(command=self.move_blue)
 
@@ -50,6 +52,7 @@ class Mode1:
         self.blueDecrease1 += 1
         if self.blueDecrease1 % 4 == 0:
             self.blueCounter1 += 1
+        record_blue(self.timer)
 
     def move_red(self):
         randVal = random.randrange(1, self.redCounter1)
@@ -59,11 +62,13 @@ class Mode1:
         if self.redDecrease1 % 4 == 0:
             self.redCounter1 += 1
         # print("red probability of success: 1/" + str(self.redCounter1))
+        record_red(self.timer)
     
     def move_green(self):
         randVal = random.randrange(1, 3)
         if randVal == 1:
             self.move_right()
+        record_green(self.timer)
 
     def move_yellow(self):
         randVal = random.randrange(1, self.yellowCounter1)
@@ -73,3 +78,4 @@ class Mode1:
         if self.yellowDecrease1 % 4 == 0:
             self.yellowCounter1 += 1
         # print("yellow probability of success: 1/" + str(self.yellowCounter1))
+        record_yellow(self.timer)

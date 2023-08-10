@@ -1,7 +1,7 @@
 from canvas import *
 
 class ModeC:
-    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down, screen):
+    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down, screen, timer):
 
         self.btnB = btnB
         self.btnR = btnR
@@ -23,6 +23,8 @@ class ModeC:
         self.input_seq = []
         self.move_seq1 = ['g', 'g']
         self.move_seq2 = ['r', 'y']
+        
+        self.timer = timer
 
     def assign_btnB(self):
         self.btnB.config(command=self.move_blue)
@@ -38,9 +40,11 @@ class ModeC:
 
     def move_blue(self):
         self.input_seq.append('b')
+        record_blue(self.timer)
 
     def move_red(self):
         self.input_seq.append('r')
+        record_red(self.timer)
     
     def move_green(self):
         self.input_seq.append('g')
@@ -48,9 +52,11 @@ class ModeC:
             self.move_right()
             self.move_right()
             self.input_seq = []
+        record_green(self.timer)
 
     def move_yellow(self):
         self.input_seq.append('y')
         if self.input_seq[-2:] == self.move_seq2 and self.screen.canvas.coords(self.screen.dot)[0] > 575:
             self.move_right()
             self.move_right()
+        record_yellow(self.timer)

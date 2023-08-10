@@ -1,7 +1,7 @@
 from canvas import *
 
 class ModeA:
-    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down):
+    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down, timer):
 
         self.btnB = btnB
         self.btnR = btnR
@@ -18,6 +18,8 @@ class ModeA:
         self.move_up = move_up
         self.move_down = move_down
 
+        self.timer = timer
+
     def assign_btnB(self):
         self.btnB.config(command=self.move_blue)
 
@@ -32,12 +34,16 @@ class ModeA:
 
     def move_blue(self):
         self.move_right()
+        record_blue(self.timer)
 
     def move_red(self):
         self.move_left()
+        record_red(self.timer)
     
     def move_green(self):
         self.move_up()
+        record_green(self.timer)
 
     def move_yellow(self):
         self.move_down()
+        record_yellow(self.timer)
