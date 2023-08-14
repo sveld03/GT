@@ -4,6 +4,8 @@ import sqlite3
 
 from time import *
 
+from convert import *
+
 # table name: FreqProf
 # table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
 
@@ -12,7 +14,6 @@ from time import *
 class canvas(Tk):
     def __init__(self):
         super().__init__()
-        
 
         # game title
         self.title("The Hard Easy Game")
@@ -88,21 +89,22 @@ class canvas(Tk):
         dy = self.init_y1 - y1
         self.canvas.move(self.dot, dx, dy)
 
-    def check_completion(self, conn):
+    def check_completion(self, conn, conv):
         if self.canvas.coords(self.dot)[2] >= 1225:
             self.game_mode = None
             self.congrats.place(x=50, y=625)
             self.reset()
             conn.close()
+            conv.convert()
 
     def move_left(self):
         if self.canvas.coords(self.dot)[0] > 0:
             self.canvas.move(self.dot, -20, 0)
 
-    def move_right(self, conn):
+    def move_right(self, conn, conv):
         if self.canvas.coords(self.dot)[2] < 1250:
             self.canvas.move(self.dot, 20, 0)
-            self.check_completion(conn)
+            self.check_completion(conn, conv)
 
     def move_up(self):
         if self.canvas.coords(self.dot)[1] > 0:

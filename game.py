@@ -6,6 +6,8 @@ from modeC import ModeC
 from mode1 import Mode1
 from mode2 import Mode2
 
+import rpy2.robjects as robjects
+
 class Game:
     def __init__(self, screen):
         
@@ -62,4 +64,11 @@ class Game:
 if __name__ == "__main__":
     screen = canvas()
     game = Game(screen)
-    game.screen.mainloop()
+    robjects.r('library(FreqProf)')
+    r_script_path = "C:/Users/techwatch/Downloads/GT generativity Steven/Frequency Profile 2.0/FreqProf/R/runEx.R"
+    robjects.r('library(ggplot2)')
+    robjects.r('library(reshape2)')
+    robjects.r('library(grid)')
+    robjects.r.source(r_script_path)
+    robjects.r.runEx()
+    # game.screen.mainloop()

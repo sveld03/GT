@@ -24,6 +24,8 @@ class ModeC:
         self.freqprof = sqlite3.connect('freqprof.db')
         self.Cursor = self.freqprof.cursor()
 
+        self.converter = Converter(self.screen.nameNtr.get(), 'C', self.screen.trialNtr.get())
+
         self.assign_btnB()
         self.assign_btnR()
         self.assign_btnG()
@@ -52,14 +54,14 @@ class ModeC:
     def move_green(self):
         self.input_seq.append('g')
         if self.input_seq[-2:] == self.move_seq1 and self.screen.canvas.coords(self.screen.dot)[0] <= 575:
-            self.move_right(self.freqprof)
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
+            self.move_right(self.freqprof, self.converter)
             self.input_seq = []
         record_green(self.Cursor, self.freqprof, self.timer, 'C', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
 
     def move_yellow(self):
         self.input_seq.append('y')
         if self.input_seq[-2:] == self.move_seq2 and self.screen.canvas.coords(self.screen.dot)[0] > 575:
-            self.move_right(self.freqprof)
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
+            self.move_right(self.freqprof, self.converter)
         record_yellow(self.Cursor, self.freqprof, self.timer, 'C', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
