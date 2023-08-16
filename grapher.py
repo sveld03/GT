@@ -1,10 +1,13 @@
 # primary graphics library
 from tkinter import *
 
-# data visualization
+
+# # data visualization
 
 # import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+# # Arrays
 # import numpy as np
 
 # create root window
@@ -45,6 +48,7 @@ root.config(menu=menu)
 lbl = Label(root, text = "Delta")
 lbl.grid(column = 2, row = 0)
 
+
 # parameter input
 
 # epsilon
@@ -75,6 +79,7 @@ deltRNtr.grid(column = 2, row = 3)
 probLbl = Label(root, text ="Initial Probabilities")
 probLbl.grid(column=0, row = 4)
 
+# Display labels and entry fields for initial behavioral probabilities
 behaviors = [[], [], [], []]
 for num in range(4):
     behaviors[num].append(Label(root, text = "Behavior " + str(num + 1) + ": "))
@@ -102,24 +107,30 @@ class matrix(Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        
+        # Create 5x5 Frame
         self.entries = {}
         self.tableheight = 5
         self.tablewidth = 5
         counter = 0
+
         for row in range(self.tableheight):
             for column in range(self.tablewidth):
+
+                # Leave top left corner blank
                 if row == 0 and column == 0:
                     self.entries[counter] = Label(self, text = "")
                     self.entries[counter].grid(row=row, column=column) 
                     counter += 1
                     continue
+
+                # In first row and first column, label behavior numbers
                 elif row == 0:
                     self.entries[counter] = Label(self, text = str(column))
                 elif column == 0:
                     self.entries[counter] = Label(self, text = str(row))
-                # enforces symmetry
-                # elif row >= column:
-                #     self.entries[counter] = Entry(self, width=5, state=DISABLED)
+
+                # Remaining 4x4 grid is for lambda entry
                 else:
                     self.entries[counter] = Entry(self, width=5)
                 self.entries[counter].grid(row=row, column=column) 
@@ -147,7 +158,7 @@ def genGraph():
     # lambda matrix
     lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
-    # allows for asymmetry
+    # Fill in lambda matrix list with user-inputted values
     if data.entries[7].get() != '':
         lm[1][2] = float(data.entries[7].get())
     
@@ -184,6 +195,7 @@ def genGraph():
     if data.entries[23].get() != '':
         lm[4][3] = float(data.entries[23].get())
 
+    # If any lambda values have abs value greater than 1, throw error
     for row in range(5):
         for column in range(5):
             if lm[row][column] < -1 or lm[row][column] > 1:
@@ -222,6 +234,7 @@ def genGraph():
                     # print(im[y][z], end=" ")
                 # print()
             
+            # For each behavior, calculate the probability of this behavior for this cycle and append it to bvals
             for y in range(1, 5):
                 epEffect = em[y]
                 alphEffect = am[y]
@@ -235,23 +248,34 @@ def genGraph():
         
         return bvals
 
+    # Initialize behavioral probabilities with user input
     b10 = float(behaviors[0][1].get())
     b20 = float(behaviors[1][1].get())
     b30 = float(behaviors[2][1].get())
     b40 = float(behaviors[3][1].get())
 
+    # Initialize values for number of data points, epsilon, and alpha with user input
     points = int(dataNtr.get())
     ep = float(epNtr.get())
     alph = float(alphNtr.get())
 
+    # Generate a list of behavioral probabilities over time
     b_values = generate(b10, b20, b30, b40, ep, alph, points)
+
+    # Plot the probability profile for each behavior, overlaid on top of each other
     plt.plot(range(len(b_values[1])), b_values[1], 'b', linestyle='solid', label="Behavior 1")
     plt.plot(range(len(b_values[2])), b_values[2], 'r', linestyle='solid', label="Behavior 2")
     plt.plot(range(len(b_values[3])), b_values[3], 'g', linestyle='solid', label="Behavior 3")
     plt.plot(range(len(b_values[4])), b_values[4], 'y', linestyle='solid', label="Behavior 4")
+
+    # Label axes
     plt.xlabel('Time')
     plt.ylabel('Probability of Behavior')
+
+    # Tells which color corresponds to which behavior
     plt.legend()
+
+    # Display probability profile
     plt.show()
 
 # submit button

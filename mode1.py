@@ -31,6 +31,8 @@ class Mode1:
         self.freqprof = sqlite3.connect('freqprof.db')
         self.Cursor = self.freqprof.cursor()
 
+        self.converter = Converter(self.screen.nameNtr.get(), '1', self.screen.trialNtr.get()) 
+
         self.assign_btnB()
         self.assign_btnR()
         self.assign_btnG()
@@ -52,7 +54,7 @@ class Mode1:
         randVal = random.randrange(1, self.blueCounter1)
         print("blue probability of success: 1/" + str(self.blueCounter1))
         if randVal == 1 and self.blueCounter1 < 10:
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
             print("success")
         self.blueDecrease1 += 1
         if self.blueDecrease1 % 4 == 0:
@@ -62,7 +64,7 @@ class Mode1:
     def move_red(self):
         randVal = random.randrange(1, self.redCounter1)
         if randVal == 1 and self.redCounter1 < 10:
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
         self.redDecrease1 += 1
         if self.redDecrease1 % 4 == 0:
             self.redCounter1 += 1
@@ -72,13 +74,13 @@ class Mode1:
     def move_green(self):
         randVal = random.randrange(1, 3)
         if randVal == 1:
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
         record_green(self.Cursor, self.freqprof, self.timer, '1', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
 
     def move_yellow(self):
         randVal = random.randrange(1, self.yellowCounter1)
         if randVal == 1 and self.yellowCounter1 < 10:
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
         self.yellowDecrease1 += 1
         if self.yellowDecrease1 % 4 == 0:
             self.yellowCounter1 += 1

@@ -339,7 +339,7 @@ def runExp():
     for row in range(5):
         for column in range(5):
             if lm[row][column] < -1 or lm[row][column] > 1:
-                errMessage = Label(root, text = "lamda values should be between -1 and 1.", fg = "red")
+                errMessage = Label(root, text = "lambda values should be between -1 and 1.", fg = "red")
                 errMessage.grid(column = 1, row = 10)
 
     # generate 2D array storing probability data points over time for all behaviors

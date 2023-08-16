@@ -23,6 +23,8 @@ class ModeB:
         self.freqprof = sqlite3.connect('freqprof.db')
         self.Cursor = self.freqprof.cursor()
 
+        self.converter = Converter(self.screen.nameNtr.get(), 'B', self.screen.trialNtr.get()) 
+
         self.assign_btnB()
         self.assign_btnR()
         self.assign_btnG()
@@ -45,7 +47,7 @@ class ModeB:
         self.move_up()
         if self.input_seq[-4:] == self.move_seq:
             for num in range(4):
-                self.move_right(self.freqprof)
+                self.move_right(self.freqprof, self.converter)
         record_blue(self.Cursor, self.freqprof, self.timer, 'B', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
 
     def move_red(self):

@@ -22,6 +22,8 @@ class Mode2:
         self.freqprof = sqlite3.connect('freqprof.db')
         self.Cursor = self.freqprof.cursor()
 
+        self.converter = Converter(self.screen.nameNtr.get(), '2', self.screen.trialNtr.get()) 
+
         self.assign_btnB()
         self.assign_btnR()
 
@@ -39,7 +41,7 @@ class Mode2:
         else:
             randVal = random.randrange(1, 3)
         if randVal == 1:
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
         record_green(self.Cursor, self.freqprof, self.timer, '2', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
 
     def move_red(self):
@@ -48,5 +50,5 @@ class Mode2:
         else:
             randVal = random.randrange(1, 10)
         if randVal == 1:
-            self.move_right(self.freqprof)
+            self.move_right(self.freqprof, self.converter)
         record_yellow(self.Cursor, self.freqprof, self.timer, '2', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
