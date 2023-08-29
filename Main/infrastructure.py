@@ -3,18 +3,20 @@ from tkinter import *
 
 # Database
 import sqlite3
+import atexit
 
 # Timer
 from time import *
-
-# Frequency Profile
-from convert import *
 
 # Data Visualization
 import matplotlib.pyplot as plt
 
 # Arrays
 import numpy as np
+
+from matplotlib.animation import FuncAnimation
+
+import threading
 
 # table name: FreqProf
 # table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
@@ -53,6 +55,8 @@ class screen(Tk):
         self.trialNtr.place(x=1050, y=25)
         self.trialNtr.insert(0, '1')
 
+        self.run = False
+
         # Game mode
         self.game_mode = None
         self.mode_label = Label(self, text='')
@@ -81,6 +85,8 @@ class screen(Tk):
 
         # Hidden congratulations label, will appear when game is completed
         self.congrats = Label(self, text="Congratulations! You completed the game! Exit or try another mode.", bg='green')
+
+        self.button_states = {'btnB': 0, 'btnR': 0, 'btnG': 0, 'btnY': 0,}
 
         # Create buttons and menu
         self.create_buttons()
@@ -121,18 +127,18 @@ class screen(Tk):
 
         # Reset game mode and buttons
         self.game_mode = None
+        self.run = False
         self.btnB.config(command=self.do_nothing)
         self.btnR.config(command=self.do_nothing)
         self.btnG.config(command=self.do_nothing)
         self.btnY.config(command=self.do_nothing)
 
-    # If the user has completed the game, this function says congrats, resets the screen, closes the database connection, and converts the game data to a CSV
-    def check_completion(self, conn, conv):
+    # If the user has completed the game, this function says congrats, resets the screen, closes the database connection
+    def check_completion(self, conn):
         if self.canvas.coords(self.dot)[2] >= 1225:
             self.congrats.place(x=50, y=625)
             self.reset()
-            conn.close()
-            conv.convert()
+            # conn.close()
 
     # Moves dot left
     def move_left(self):
@@ -140,10 +146,10 @@ class screen(Tk):
             self.canvas.move(self.dot, -20, 0)
 
     # Moves dot right, then checks to see if the user has completed the game
-    def move_right(self, conn, conv):
+    def move_right(self, conn):
         if self.canvas.coords(self.dot)[2] < 1250:
             self.canvas.move(self.dot, 20, 0)
-            self.check_completion(conn, conv)
+            self.check_completion(conn)
 
     # Moves dot up
     def move_up(self):
@@ -158,6 +164,9 @@ class screen(Tk):
     # Arbitrary button to reset buttons
     def do_nothing(self):
         x = 5
+
+    def update_button_state(self, button):
+        self.button_states[button] = 1
 
 # Timer starts running when a game mode begins, keeps track of how much time has elapsed
 class Timer:
@@ -189,29 +198,43 @@ class Timer:
 #     plt.xlim(0, x_data[-1] + 1)  # Adjust the x-axis limits
 #     plt.pause(1)  # Pause for a short time to allow the plot to update
 
+def truncate_after_first_decimal(number):
+    str_number = str(number)
+    decimal_index = str_number.find('.')
+    
+    if decimal_index != -1:
+        truncated_number = str_number[:decimal_index + 2]  # Include the decimal point and one digit
+        return float(truncated_number)
+    else:
+        return number
+
 # Records blue botton clicks
-def record_blue(Cursor, freqprof, timer, game_mode, name, trial, plt):
+def record_blue(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks blue button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(1, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(1, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
     freqprof.commit()
     # TO DO: when blue button is clicked, add this data point to the real-time frequency profile
-    plt.plot(timer.time_elapsed(), 1, 'b', linestyle='solid')
+    # plt.plot(timer.time_elapsed(), 1, 'b', linestyle='solid')
 
 # Records red button clicks
 def record_red(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks red button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 1, 0, 0, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 1, 0, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
     freqprof.commit()
 
 # Records green button clicks
 def record_green(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks green button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 1, 0, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 1, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
     freqprof.commit()
 
 # Records yellow button clicks
 def record_yellow(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks yellow button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 1, ?, ?, ?, ?)', (game_mode, name, timer.time_elapsed(), trial))
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 1, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
+    freqprof.commit()
+
+def record_none(Cursor, freqprof, timer, game_mode, name, trial):
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
     freqprof.commit()
         

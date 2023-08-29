@@ -1,7 +1,7 @@
 from infrastructure import *
 
 class ModeB:
-    def __init__(self, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down, screen, timer):
+    def __init__(self, freqprof, cursor, btnB, btnR, btnG, btnY, move_left, move_right, move_up, move_down, screen, timer):
 
         self.btnB = btnB
         self.btnR = btnR
@@ -14,21 +14,28 @@ class ModeB:
         self.move_down = move_down
 
         self.screen = screen
+        screen.run = True
 
         self.input_seq = []
         self.move_seq = ['g', 'y', 'r', 'b']
 
         self.timer = timer
 
-        self.freqprof = sqlite3.connect('freqprof.db')
-        self.Cursor = self.freqprof.cursor()
-
-        self.converter = Converter(self.screen.nameNtr.get(), 'B', self.screen.trialNtr.get()) 
-
         self.assign_btnB()
         self.assign_btnR()
         self.assign_btnG()
         self.assign_btnY()
+
+        # Connect to database
+        self.freqprof = freqprof
+        self.Cursor = cursor
+
+        self.button_clicks = {"Up": 0, "Down": 0, "Left": 0, "Right": 0}
+        self.timestamps = []
+
+    def update_clicks(self, button):
+        self.button_clicks[button] += 1
+        self.timestamps.append(time())
 
     def assign_btnB(self):
         self.btnB.config(command=self.move_blue)
@@ -47,20 +54,20 @@ class ModeB:
         self.move_up()
         if self.input_seq[-4:] == self.move_seq:
             for num in range(4):
-                self.move_right(self.freqprof, self.converter)
-        record_blue(self.Cursor, self.freqprof, self.timer, 'B', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
+                self.move_right(self.freqprof)
+        self.screen.button_states['btnB'] = 1
 
     def move_red(self):
         self.input_seq.append('r')
         self.move_down()
-        record_red(self.Cursor, self.freqprof, self.timer, 'B', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
+        self.screen.button_states['btnR'] = 1
     
     def move_green(self):
         self.input_seq.append('g')
         self.move_down()
-        record_green(self.Cursor, self.freqprof, self.timer, 'B', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
+        self.screen.button_states['btnG'] = 1
 
     def move_yellow(self):
         self.input_seq.append('y')
         self.move_up()
-        record_yellow(self.Cursor, self.freqprof, self.timer, 'B', self.screen.nameNtr.get(), int(self.screen.trialNtr.get()))
+        self.screen.button_states['btnY'] = 1
