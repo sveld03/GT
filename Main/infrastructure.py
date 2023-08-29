@@ -163,7 +163,7 @@ class screen(Tk):
 
     # Arbitrary button to reset buttons
     def do_nothing(self):
-        x = 5
+        pass
 
     def update_button_state(self, button):
         self.button_states[button] = 1
