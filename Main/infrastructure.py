@@ -1,6 +1,10 @@
 # Graphics
 from tkinter import *
 
+import itertools
+
+import sys
+
 # Database
 import sqlite3
 import atexit
@@ -15,8 +19,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from matplotlib.animation import FuncAnimation
+from matplotlib.animation import TimedAnimation
 
 import threading
+import queue
+
+MAX_FRAMES = 3000
 
 # table name: FreqProf
 # table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
@@ -25,7 +33,7 @@ import threading
 
 
 # Game display: canvas, buttons, menu, etc.
-class screen(Tk):
+class Screen(Tk):
     
     # When an instance of this class is created, it initializes a tkinter application with visuals already filled in
     def __init__(self):
@@ -55,10 +63,8 @@ class screen(Tk):
         self.trialNtr.place(x=1050, y=25)
         self.trialNtr.insert(0, '1')
 
-        self.run = False
-
         # Game mode
-        self.game_mode = None
+        self.mode_char = '0'
         self.mode_label = Label(self, text='')
         self.mode_label.place(x=800, y=75)
 
@@ -85,8 +91,6 @@ class screen(Tk):
 
         # Hidden congratulations label, will appear when game is completed
         self.congrats = Label(self, text="Congratulations! You completed the game! Exit or try another mode.", bg='green')
-
-        self.button_states = {'btnB': 0, 'btnR': 0, 'btnG': 0, 'btnY': 0,}
 
         # Create buttons and menu
         self.create_buttons()
@@ -126,47 +130,14 @@ class screen(Tk):
         self.canvas.move(self.dot, dx, dy)
 
         # Reset game mode and buttons
-        self.game_mode = None
-        self.run = False
         self.btnB.config(command=self.do_nothing)
         self.btnR.config(command=self.do_nothing)
         self.btnG.config(command=self.do_nothing)
         self.btnY.config(command=self.do_nothing)
 
-    # If the user has completed the game, this function says congrats, resets the screen, closes the database connection
-    def check_completion(self, conn):
-        if self.canvas.coords(self.dot)[2] >= 1225:
-            self.congrats.place(x=50, y=625)
-            self.reset()
-            # conn.close()
-
-    # Moves dot left
-    def move_left(self):
-        if self.canvas.coords(self.dot)[0] > 0:
-            self.canvas.move(self.dot, -20, 0)
-
-    # Moves dot right, then checks to see if the user has completed the game
-    def move_right(self, conn):
-        if self.canvas.coords(self.dot)[2] < 1250:
-            self.canvas.move(self.dot, 20, 0)
-            self.check_completion(conn)
-
-    # Moves dot up
-    def move_up(self):
-        if self.canvas.coords(self.dot)[1] > 0:
-            self.canvas.move(self.dot, 0, -20)
-
-    # Moves dot down
-    def move_down(self):
-        if self.canvas.coords(self.dot)[3] < 500:
-            self.canvas.move(self.dot, 0, 20)
-
     # Arbitrary button to reset buttons
     def do_nothing(self):
         pass
-
-    def update_button_state(self, button):
-        self.button_states[button] = 1
 
 # Timer starts running when a game mode begins, keeps track of how much time has elapsed
 class Timer:
@@ -176,27 +147,6 @@ class Timer:
         current_time = time()
         elapsed = current_time - self.start_time
         return elapsed
-
-# x_data = np.arange(0, 10, 1)
-# y_data = np.random.rand(len(x_data))
-
-# line, = plt.plot(x_data, y_data, 'b', linestyle='solid', label="test")
-# plt.show(block=False)
-
-# while True:
-#     # Simulate gathering new data points
-#     new_data_point = np.random.rand()
-    
-#     # Append the new data point to the existing data
-#     x_data = np.append(x_data, x_data[-1] + 1)
-#     y_data = np.append(y_data, new_data_point)
-    
-#     # Update the data of the line
-#     line.set_data(x_data, y_data)
-    
-#     # Update the plot
-#     plt.xlim(0, x_data[-1] + 1)  # Adjust the x-axis limits
-#     plt.pause(1)  # Pause for a short time to allow the plot to update
 
 def truncate_after_first_decimal(number):
     str_number = str(number)

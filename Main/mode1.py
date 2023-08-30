@@ -16,38 +16,38 @@ class Mode1(ModeTemplate):
         self.yellowDecrease1 = 1
 
     def move_blue(self):
+        super().move_blue()
         randVal = random.randrange(1, self.blueCounter1)
         # print("blue probability of success: 1/" + str(self.blueCounter1))
         if randVal == 1 and self.blueCounter1 < 10:
-            self.move_right(self.freqprof)
+            super().move_right()
             # print("success")
         self.blueDecrease1 += 1
         if self.blueDecrease1 % 4 == 0:
             self.blueCounter1 += 1
-        self.screen.button_states['btnB'] = 1
 
     def move_red(self):
+        super().move_red()
         randVal = random.randrange(1, self.redCounter1)
         if randVal == 1 and self.redCounter1 < 10:
-            self.move_right(self.freqprof)
+            super().move_right()
         self.redDecrease1 += 1
         if self.redDecrease1 % 4 == 0:
             self.redCounter1 += 1
         # print("red probability of success: 1/" + str(self.redCounter1))
-        self.screen.button_states['btnR'] = 1
     
     def move_green(self):
+        super().move_green()
         randVal = random.randrange(1, 3)
         if randVal == 1:
-            self.move_right(self.freqprof)
-        self.screen.button_states['btnG'] = 1
+            super().move_right()
 
     def move_yellow(self):
+        super().move_yellow()
         randVal = random.randrange(1, self.yellowCounter1)
         if randVal == 1 and self.yellowCounter1 < 10:
-            self.move_right(self.freqprof)
+            super().move_right()
         self.yellowDecrease1 += 1
         if self.yellowDecrease1 % 4 == 0:
             self.yellowCounter1 += 1
         # print("yellow probability of success: 1/" + str(self.yellowCounter1))
-        self.screen.button_states['btnY'] = 1

@@ -581,3 +581,147 @@
 #     plt.legend()
 
 
+"""infrastructure.py"""
+# x_data = np.arange(0, 10, 1)
+# y_data = np.random.rand(len(x_data))
+
+# line, = plt.plot(x_data, y_data, 'b', linestyle='solid', label="test")
+# plt.show(block=False)
+
+# while True:
+#     # Simulate gathering new data points
+#     new_data_point = np.random.rand()
+    
+#     # Append the new data point to the existing data
+#     x_data = np.append(x_data, x_data[-1] + 1)
+#     y_data = np.append(y_data, new_data_point)
+    
+#     # Update the data of the line
+#     line.set_data(x_data, y_data)
+    
+#     # Update the plot
+#     plt.xlim(0, x_data[-1] + 1)  # Adjust the x-axis limits
+#     plt.pause(1)  # Pause for a short time to allow the plot to update
+
+
+"""game.py"""
+# timer = Timer()
+    # minigame = ModeA(game.screen.btnB, game.screen.btnR, game.screen.btnG, game.screen.btnY, game.screen.move_left, game.screen.move_right, game.screen.move_up, game.screen.move_down, game.screen, timer)
+    # ani = FuncAnimation(plt.gcf(), minigame.animate, interval=500)
+    # plt.show()
+    # testRoot.mainloop()
+
+    # def update_plot(self, frame):
+
+    #     # Fetch new data from the database
+    #     self.Cursor.execute("SELECT time, B1, B2, B3, B4 FROM FreqProf WHERE time > ?", (frame * 0.1,))
+    #     new_data = self.Cursor.fetchall()
+
+    #     # Update the plot data
+    #     for row in new_data:
+    #         self.x_data.append(row[6])
+    #         self.y1_data.append(row[1])
+    #         self.y2_data.append(row[2])
+    #         self.y3_data.append(row[3])
+    #         self.y4_data.append(row[4])
+
+    #     # Update the line plot
+    #     self.line1.set_data(self.x_data, self.y1_data)
+    #     self.line2.set_data(self.x_data, self.y2_data)
+    #     self.line3.set_data(self.x_data, self.y3_data)
+    #     self.line4.set_data(self.x_data, self.y4_data)
+
+    #     plt.legend()
+    #     plt.show()
+
+    # def animate(self):
+
+    #     """Notes to myself for next time:
+    #             - this function should be present in each game mode, not the main game class, to run a separate animation for each"""
+
+    #     # Create an animation that updates the plot every 0.1 seconds
+    #     ani = FuncAnimation(self.fig, self.update_plot, repeat=False)
+
+    #     # Display the plot
+    #     plt.show()
+
+    # self.processing_thread = None
+    # self.processing_interval = 0.1  # seconds
+
+    # self.x_data = []
+    # self.y1_data = []
+    # self.y2_data = []
+    # self.y3_data = []
+    # self.y4_data = []
+
+    # self.fig, self.ax = plt.subplots()
+
+    # self.line1, = self.ax.plot(self.x_data, self.y1_data, 'b', linestyle='solid', label="Behavior 1")
+    # self.line2, = self.ax.plot(self.x_data, self.y2_data, 'r', linestyle='solid', label="Behavior 2")
+    # self.line3, = self.ax.plot(self.x_data, self.y3_data, 'g', linestyle='solid', label="Behavior 3")
+    # self.line4, = self.ax.plot(self.x_data, self.y4_data, linestyle='solid', label="Behavior 4")
+
+
+    # def process_data(self):
+    #     while True:
+    #         start_time = time()
+
+    #         self.screen.event_generate("<<DataProcessed>>", when="tail")
+
+    #         elapsed_time = time() - start_time
+
+    #         if elapsed_time < self.processing_interval:
+    #             sleep(self.processing_interval - elapsed_time)
+
+    # def update_data_table(self):
+    #     if self.processing_thread is None:
+    #         self.processing_thread = threading.Thread(target=self.process_data)
+    #         self.processing_thread.start()
+
+    #     self.screen.after(int(self.processing_interval * 1000), self.update_data_table)
+
+    # def handle_data(self, event):
+    #     click = False
+    #     if self.screen.button_states['btnB'] == 1 and self.screen.run == True:
+    #         record_blue(self.Cursor, self.freqprof, self.screen.game_mode.timer, self.mode_label, self.screen.nameNtr.get(), self.screen.trialNtr.get())
+    #         click = True
+    #     if self.screen.button_states['btnR'] == 1 and self.screen.run == True:
+    #         record_red(self.Cursor, self.freqprof, self.screen.game_mode.timer, self.mode_label, self.screen.nameNtr.get(), self.screen.trialNtr.get())
+    #         click = True
+    #     if self.screen.button_states['btnG'] == 1 and self.screen.run == True:
+    #         record_green(self.Cursor, self.freqprof, self.screen.game_mode.timer, self.mode_label, self.screen.nameNtr.get(), self.screen.trialNtr.get())
+    #         click = True
+    #     if self.screen.button_states['btnY'] == 1 and self.screen.run == True:
+    #         record_yellow(self.Cursor, self.freqprof, self.screen.game_mode.timer, self.mode_label, self.screen.nameNtr.get(), self.screen.trialNtr.get())
+    #         click = True
+    #     if click == False and self.screen.run == True:
+    #         record_none(self.Cursor, self.freqprof, self.screen.game_mode.timer, self.mode_label, self.screen.nameNtr.get(), self.screen.trialNtr.get())
+
+    #     for button in self.screen.button_states:
+    #         self.screen.button_states[button] = 0
+        
+    #     self.Cursor.execute('SELECT * FROM FreqProf WHERE name = ? AND mode = ? AND trial = ?', 
+    #                 (self.screen.nameNtr.get(), self.mode_label, self.screen.trialNtr.get()))
+    #     self.subset = self.Cursor.fetchall()
+
+    #     # Print error message to terminal if sample is not continuous
+    #     for n in range(len(self.subset) - 1):
+    #         if self.subset[n][0] + 1 != self.subset[n + 1][0]:
+    #             print("Error: sample is not continuous, may be a combination of multiple trials")
+
+
+"""modeTemplate.py"""
+    # def plot_data(self):
+    #     plt.bar(self.button_clicks.keys(), self.button_clicks.values())
+    #     plt.xlabel("Button")
+    #     plt.ylabel("Click Count")
+    #     plt.title("Button Click Count")
+    #     plt.show
+    
+    # def animate(self):
+    #     self.current_time = time()
+    #     while self.timestamps and self.current_time - self.timestamps[0] > 0.5:
+    #         self.timestamp = self.timestamps.pop(0)
+    #         for button, count in self.button_cloicks.items():
+    #             print(f"{button}: {count}")
+    #         self.plot_data()

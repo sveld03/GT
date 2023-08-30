@@ -8,24 +8,24 @@ class ModeB(ModeTemplate):
         self.move_seq = ['g', 'y', 'r', 'b']
 
     def move_blue(self):
+        super().move_blue()
         self.input_seq.append('b')
-        self.move_up()
+        super().move_up()
         if self.input_seq[-4:] == self.move_seq:
             for num in range(4):
-                self.move_right(self.freqprof)
-        self.screen.button_states['btnB'] = 1
+                super().move_right()
 
     def move_red(self):
+        super().move_red()
         self.input_seq.append('r')
-        self.move_down()
-        self.screen.button_states['btnR'] = 1
+        super().move_down()
     
     def move_green(self):
+        super().move_green()
         self.input_seq.append('g')
-        self.move_down()
-        self.screen.button_states['btnG'] = 1
+        super().move_down()
 
     def move_yellow(self):
+        super().move_yellow()
         self.input_seq.append('y')
-        self.move_up()
-        self.screen.button_states['btnY'] = 1
+        super().move_up()

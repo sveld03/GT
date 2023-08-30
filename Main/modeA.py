@@ -6,20 +6,20 @@ class ModeA(ModeTemplate):
 
     # Move dot right, then record blue button click
     def move_blue(self):
-        self.move_right(self.freqprof)
-        self.screen.button_states['btnB'] = 1
+        super().move_blue()
+        super().move_right()
 
     # Move dot left, then record red button click
     def move_red(self):
-        self.move_left()
-        self.screen.button_states['btnR'] = 1
+        super().move_red()
+        super().move_left()
     
     # Move dot up, then record green button click
     def move_green(self):
-        self.move_up()
-        self.screen.button_states['btnG'] = 1
+        super().move_green()
+        super().move_up()
 
     # Move dot down, then record yellow button click
     def move_yellow(self):
-        self.move_down()
-        self.screen.button_states['btnY'] = 1
+        super().move_yellow()
+        super().move_down()

@@ -9,24 +9,24 @@ class ModeC(ModeTemplate):
         self.move_seq2 = ['r', 'y']
 
     def move_blue(self):
+        super().move_blue()
         self.input_seq.append('b')
-        self.screen.button_states['btnB'] = 1
 
     def move_red(self):
+        super().move_red()
         self.input_seq.append('r')
-        self.screen.button_states['btnR'] = 1
     
     def move_green(self):
+        super().move_green()
         self.input_seq.append('g')
         if self.input_seq[-2:] == self.move_seq1 and self.screen.canvas.coords(self.screen.dot)[0] <= 575:
-            self.move_right(self.freqprof)
-            self.move_right(self.freqprof)
+            super().move_right()
+            super().move_right()
             self.input_seq = []
-        self.screen.button_states['btnG'] = 1
 
     def move_yellow(self):
+        super().move_yellow()
         self.input_seq.append('y')
         if self.input_seq[-2:] == self.move_seq2 and self.screen.canvas.coords(self.screen.dot)[0] > 575:
-            self.move_right(self.freqprof)
-            self.move_right(self.freqprof)
-        self.screen.button_states['btnY'] = 1
+            super().move_right()
+            super().move_right()
