@@ -3,8 +3,6 @@
 # Screen and utilities
 from infrastructure import *
 
-# from abc import ABC, abstractmethod
-
 # Game mode A: simplest version, blue button moves dot right
 class ModeTemplate:
     def __init__(self, freqprof, cursor, screen, timer):

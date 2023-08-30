@@ -96,7 +96,4 @@ if __name__ == "__main__":
 
     screen = Screen()
     game = Game(screen)
-
-    # game.screen.bind("<<DataProcessed>>", game.game_mode.record_data)
-
     game.screen.mainloop()

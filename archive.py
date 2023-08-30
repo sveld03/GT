@@ -725,3 +725,13 @@
     #         for button, count in self.button_cloicks.items():
     #             print(f"{button}: {count}")
     #         self.plot_data()
+
+"""grapher.py"""
+# def fourClicked():
+    #     prob = Label(lvl2, text = "Enter Initial Probabilities")
+    #     prob.grid(column = 0, row = 0)
+    #     behav1 = Label(lvl2, text = "Behavior 1: ")
+    #     behav1.grid(column = 0, row = 1)
+    #     behav1Ntr = Entry(lvl2, width = 10)
+    #     behav1Ntr.grid(column = 1, row = 1)
+    #     lbl.configure(text = prob + behav1 + behav1Ntr)
