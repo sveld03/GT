@@ -1,23 +1,35 @@
 # Runs both the grapher and the game
 
 from game import *
-from grapher import *
+from params import *
+from realTimeGrapher import *
 
-def run_game():
-    screen = Screen()
-    game = Game(screen)
-    game.screen.mainloop()
+class Main:
+    def __init__(self):
+        self.params = Params()
+        self.real_time_grapher = realTimeGrapher(self.params)
 
-def run_grapher():
-    grapher = Grapher()
-    grapher.mainloop()
+        self.screen = Screen()
+        self.game = Game(self.screen, self.params)
+
+    def run_grapher(self):
+        self.params.mainloop()
+
+    def run_game(self):
+        self.game.screen.mainloop()
 
 if __name__ == "__main__":
-    grapher_thread = threading.Thread(target=run_grapher)
-    game_thread = threading.Thread(target=run_game)
 
-    grapher_thread.start()
-    game_thread.start()
+    main = Main()
 
-    grapher_thread.join()
-    game_thread.join()
+    main.run_grapher()
+    main.run_game()
+
+    # grapher_thread = threading.Thread(target=main.run_grapher)
+    # game_thread = threading.Thread(target=main.run_game)
+
+    # grapher_thread.start()
+    # game_thread.start()
+
+    # grapher_thread.join()
+    # game_thread.join()

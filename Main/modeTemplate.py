@@ -5,10 +5,12 @@ from infrastructure import *
 
 # Game mode A: simplest version, blue button moves dot right
 class ModeTemplate:
-    def __init__(self, freqprof, cursor, screen, timer):
+    def __init__(self, freqprof, cursor, screen, timer, window):
         
         self.screen = screen
         self.run = True
+
+        self.window = window
         
         # Get access to buttons on screen
         self.btnB = self.screen.btnB
@@ -35,6 +37,8 @@ class ModeTemplate:
         self.x_data = []
         self.y_data = [[], [], [], []]
         self.freq_data = [[], [], [], []]
+
+        self.queue = queue.Queue()
 
     def start(self):
         # Assign movement functions to buttons
@@ -107,8 +111,8 @@ class ModeTemplate:
         for button in self.button_clicks:
             self.button_clicks[button] = 0
 
-        count = 10
-        if len(self.x_data) < 10: 
+        count = self.window * 10
+        if len(self.x_data) < count: 
             count = len(self.x_data)
 
         new_freq_data = []
@@ -116,7 +120,9 @@ class ModeTemplate:
             new_freq_data.append(0)
             for j in range(count):
                 new_freq_data[i] += self.y_data[i][-j]
-            new_freq_data[i] = new_freq_data[i] / 10
+            new_freq_data[i] = new_freq_data[i] / (self.window * 10)
+
+        self.queue.put(new_freq_data)
         
         for i in range(4):
             self.freq_data[i].append(new_freq_data[i])
@@ -172,7 +178,7 @@ class ModeTemplate:
 
     # Move right function that sets run = False
     def move_right(self):
-        if self.screen.canvas.coords(self.screen.dot)[2] < 1250:
+        if self.screen.canvas.coords(self.screen.dot)[2] < 1225:
             self.screen.canvas.move(self.screen.dot, 20, 0)
             return True
         else:

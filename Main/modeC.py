@@ -1,8 +1,8 @@
 from modeTemplate import *
 
 class ModeC(ModeTemplate):
-    def __init__(self, freqprof, cursor, screen, timer):
-        super().__init__(freqprof, cursor, screen, timer)
+    def __init__(self, freqprof, cursor, screen, timer, window):
+        super().__init__(freqprof, cursor, screen, timer, window)
 
         self.input_seq = []
         self.move_seq1 = ['g', 'g']

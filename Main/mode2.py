@@ -3,8 +3,8 @@ from modeTemplate import *
 import random
 
 class Mode2(ModeTemplate):
-    def __init__(self, freqprof, cursor, screen, timer):
-        super().__init__(freqprof, cursor, screen, timer)
+    def __init__(self, freqprof, cursor, screen, timer, window):
+        super().__init__(freqprof, cursor, screen, timer, window)
 
     def move_blue(self):
         super().move_blue()

@@ -49,7 +49,7 @@ class matrix(Frame):
                 self.entries[counter].grid(row=row, column=column) 
                 counter += 1
 
-class Grapher(Tk):
+class Params(Tk):
     def __init__(self):
         super().__init__()
 
@@ -134,6 +134,8 @@ class Grapher(Tk):
         self.data = matrix()
         self.data.grid(column = 1, row = 11)
 
+        self.lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+
         # data points
         dataLbl = Label(self, text = "Data Points: ")
         dataLbl.grid(column = 4, row = 1)
@@ -146,139 +148,75 @@ class Grapher(Tk):
         self.iterNtr = Entry(self, width=10)
         self.iterNtr.grid(column=5, row=2)
 
+        windowLbl = Label(self, text = "Frequency profile window length (seconds):")
+        windowLbl.grid(column = 4, row = 6)
+        self.windowNtr = Entry(self, width=10)
+        self.windowNtr.grid(column = 5, row = 6)
+
         # submit button
-        submit = Button(self, text = "Generate Graph", fg = "red", command=self.genGraph)
+        submit = Button(self, text = "Generate Graph", fg = "red", command=self.store_params)
 
         # set Button grid
-        submit.grid(column=10, row=20)
+        submit.grid(column=5, row=10)
 
-    # function to generate and display graph when submit is clicked
-    def genGraph(self):
-
-        # lambda matrix
-        lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-
+    def store_params(self):
         # Fill in lambda matrix list with user-inputted values
         if self.data.entries[7].get() != '':
-            lm[1][2] = float(self.data.entries[7].get())
+            self.lm[1][2] = float(self.data.entries[7].get())
         
         if self.data.entries[11].get() != '':
-            lm[2][1] = float(self.data.entries[11].get())
+            self.lm[2][1] = float(self.data.entries[11].get())
 
         if self.data.entries[8].get() != '':
-            lm[1][3] = float(self.data.entries[8].get())
+            self.lm[1][3] = float(self.data.entries[8].get())
 
         if self.data.entries[16].get() != '':
-            lm[3][1] = float(self.data.entries[16].get())
+            self.lm[3][1] = float(self.data.entries[16].get())
 
         if self.data.entries[9].get() != '':
-            lm[1][4] = float(self.data.entries[9].get())
+            self.lm[1][4] = float(self.data.entries[9].get())
 
         if self.data.entries[21].get() != '':
-            lm[4][1] = float(self.data.entries[21].get())
+            self.lm[4][1] = float(self.data.entries[21].get())
 
         if self.data.entries[13].get() != '':
-            lm[2][3] = float(self.data.entries[13].get())
+            self.lm[2][3] = float(self.data.entries[13].get())
 
         if self.data.entries[17].get() != '':
-            lm[3][2] = float(self.data.entries[17].get())
+            self.lm[3][2] = float(self.data.entries[17].get())
 
         if self.data.entries[14].get() != '':
-            lm[2][4] = float(self.data.entries[14].get())
+            self.lm[2][4] = float(self.data.entries[14].get())
         
         if self.data.entries[22].get() != '':
-            lm[4][2] = float(self.data.entries[22].get())
+            self.lm[4][2] = float(self.data.entries[22].get())
 
         if self.data.entries[19].get() != '':
-            lm[3][4] = float(self.data.entries[19].get())
+            self.lm[3][4] = float(self.data.entries[19].get())
 
         if self.data.entries[23].get() != '':
-            lm[4][3] = float(self.data.entries[23].get())
+            self.lm[4][3] = float(self.data.entries[23].get())
 
         # If any lambda values have abs value greater than 1, throw error
         for row in range(5):
             for column in range(5):
-                if lm[row][column] < -1 or lm[row][column] > 1:
+                if self.lm[row][column] < -1 or self.lm[row][column] > 1:
                     errMessage = Label(self, text = "lamda values should be between -1 and 1.", fg = "red")
                     errMessage.grid(column = 1, row = 10)
 
-        # generate 2D array storing probability data points over time for all self.behaviors
-        def generate(b10, b20, b30, b40, epsilon, alpha, dataPoints):
-
-            # store initial behavioral probabilities
-            bvals = [[-2], [b10], [b20], [b30], [b40]]
-
-            # recursively calculate subsequent probabilty data points for each behavior
-            for num in range(dataPoints):
-
-                # extinction matrix (quantity of decrease by extinction for each behavior)
-                em = [0]
-
-                # reinforcement matrix (quantity of increase by reinforcement for each behavior)
-                am = [0]
-
-                # interaction matrix (the interaction effects between each pair of self.behaviors, before summation)
-                # encapsulates equations 3 (resurgence) and 4 (automatic chaining)
-                im = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-
-                # populate matrices with values for this cycle
-                for y in range(1, 5):
-                    em.append(-bvals[y][-1] * epsilon)
-                    am.append((1 - bvals[y][-1]) * alpha)
-                    for z in range(1, 5):
-                        if (y != z and len(bvals[z]) >= 2 and lm[y][z] >= -1 and lm[y][z] <= 1):
-                            if (lm[y][z] < 0 and bvals[z][-1] - bvals[z][-2] < 0):
-                                im[y][z] = (1 - bvals[y][-1]) * -lm[y][z] * bvals[z][-1]
-                            if (lm[y][z] > 0 and bvals[z][-1] - bvals[z][-2] > 0):
-                                im[y][z] = (1 - bvals[y][-1]) * lm[y][z] * bvals[z][-1]
-                        # print(im[y][z], end=" ")
-                    # print()
-                
-                # For each behavior, calculate the probability of this behavior for this cycle and append it to bvals
-                for y in range(1, 5):
-                    epEffect = em[y]
-                    alphEffect = am[y]
-                    intEffect = 0
-                    for z in range(1, 5):
-                        intEffect += im[y][z]
-                    cur = bvals[y][-1]
-                    change = epEffect + alphEffect + intEffect
-                    bNext = cur + change
-                    bvals[y].append(bNext)
-            
-            return bvals
-
         # Initialize behavioral probabilities with user input
-        b10 = float(self.behaviors[0][1].get())
-        b20 = float(self.behaviors[1][1].get())
-        b30 = float(self.behaviors[2][1].get())
-        b40 = float(self.behaviors[3][1].get())
+        self.b10 = float(self.behaviors[0][1].get())
+        self.b20 = float(self.behaviors[1][1].get())
+        self.b30 = float(self.behaviors[2][1].get())
+        self.b40 = float(self.behaviors[3][1].get())
 
         # Initialize values for number of data points, epsilon, and alpha with user input
-        points = int(self.dataNtr.get())
-        ep = float(self.epNtr.get())
-        alph = float(self.alphNtr.get())
+        self.points = int(self.dataNtr.get())
+        self.ep = float(self.epNtr.get())
+        self.alph = float(self.alphNtr.get())
 
-        # Generate a list of behavioral probabilities over time
-        b_values = generate(b10, b20, b30, b40, ep, alph, points)
-
-        # Plot the probability profile for each behavior, overlaid on top of each other
-        plt.plot(range(len(b_values[1])), b_values[1], 'b', linestyle='solid', label="Behavior 1")
-        plt.plot(range(len(b_values[2])), b_values[2], 'r', linestyle='solid', label="Behavior 2")
-        plt.plot(range(len(b_values[3])), b_values[3], 'g', linestyle='solid', label="Behavior 3")
-        plt.plot(range(len(b_values[4])), b_values[4], 'y', linestyle='solid', label="Behavior 4")
-
-        # Label axes
-        plt.xlabel('Time')
-        plt.ylabel('Probability of Behavior')
-
-        # Tells which color corresponds to which behavior
-        plt.legend()
-
-        # Display probability profile
-        plt.show()
-
-if __name__ == "__main__":
-    # execute Tkinter
-    grapher = Grapher()
-    grapher.mainloop()
+        self.event_generate("<<startGame>>")
+        self.event_generate("<<startGraph>>")
+    
+    def get_window(self):
+        return int(self.windowNtr.get())
