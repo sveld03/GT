@@ -7,10 +7,11 @@ from realTimeGrapher import *
 class Main:
     def __init__(self):
         self.params = Params()
-        self.real_time_grapher = realTimeGrapher(self.params)
 
         self.screen = Screen()
         self.game = Game(self.screen, self.params)
+
+        self.real_time_grapher = realTimeGrapher(self.params, self.game)
 
     def run_grapher(self):
         self.params.mainloop()

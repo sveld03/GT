@@ -40,13 +40,6 @@ class ModeTemplate:
 
         self.queue = queue.Queue()
 
-    def start(self):
-        # Assign movement functions to buttons
-        self.assign_btnB()
-        self.assign_btnR()
-        self.assign_btnG()
-        self.assign_btnY()
-
         self.fig, self.ax = plt.subplots()
         self.line1, = self.ax.plot([], [], 'b', linestyle='solid', label="Behavior 1")
         self.line2, = self.ax.plot([], [], 'r', linestyle='solid', label="Behavior 2")
@@ -54,9 +47,18 @@ class ModeTemplate:
         self.line4, = self.ax.plot([], [], 'y', linestyle='solid', label="Behavior 4")
 
         self.ax.set_ylim(0, 1)
-        # self.ax.set_xlim(0, 10)
+        self.ax.set_xlim(0, 10)
 
-        self.animate()
+        self.assign_btnB()
+        self.assign_btnR()
+        self.assign_btnG()
+        self.assign_btnY()
+
+        self.ax.set_xticks([0, 2, 4, 6, 8, 10], labels=["-10", "-8", "-6", "-4", "-2", "0"])
+
+    # def start(self):
+
+        # self.animate()
 
     def update_clicks(self, button):
         self.button_clicks[button] = 1
@@ -67,7 +69,8 @@ class ModeTemplate:
         if self.button_clicks["blue"] == 1 and self.run == True:
             record_blue(self.Cursor, self.freqprof, self.timer, self.mode_char, self.player_name, self.trial_number)
             click = True
-            self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            # self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            self.x_data.append(frame * .1)
             self.y_data[0].append(1)
             self.y_data[1].append(0)
             self.y_data[2].append(0)
@@ -76,7 +79,8 @@ class ModeTemplate:
         if self.button_clicks["red"] == 1 and self.run == True:
             record_red(self.Cursor, self.freqprof, self.timer, self.mode_char, self.player_name, self.trial_number)
             click = True
-            self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            # self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            self.x_data.append(frame * .1)
             self.y_data[0].append(0)
             self.y_data[1].append(1)
             self.y_data[2].append(0)
@@ -85,7 +89,8 @@ class ModeTemplate:
         if self.button_clicks["green"] == 1 and self.run == True:
             record_green(self.Cursor, self.freqprof, self.timer, self.mode_char, self.player_name, self.trial_number)
             click = True
-            self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            # self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            self.x_data.append(frame * .1)
             self.y_data[0].append(0)
             self.y_data[1].append(0)
             self.y_data[2].append(1)
@@ -94,7 +99,8 @@ class ModeTemplate:
         if self.button_clicks["yellow"] == 1 and self.run == True:
             record_yellow(self.Cursor, self.freqprof, self.timer, self.mode_char, self.player_name, self.trial_number)
             click = True
-            self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            # self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            self.x_data.append(frame * .1)
             self.y_data[0].append(0)
             self.y_data[1].append(0)
             self.y_data[2].append(0)
@@ -102,7 +108,8 @@ class ModeTemplate:
         
         if click == False and self.run == True:
             record_none(self.Cursor, self.freqprof, self.timer, self.mode_char, self.player_name, self.trial_number)
-            self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            # self.x_data.append(truncate_after_first_decimal(self.timer.time_elapsed()))
+            self.x_data.append(frame * .1)
             self.y_data[0].append(0)
             self.y_data[1].append(0)
             self.y_data[2].append(0)
@@ -133,23 +140,36 @@ class ModeTemplate:
         self.line4.set_data(self.x_data, self.freq_data[3])
 
         window_start = 0
-        if self.timer.time_elapsed() > 10:
-            window_start = round(self.timer.time_elapsed()) - 10
-            index_start = 0
-            for x in self.x_data:
-                if x < window_start:
-                    index_start += 1
-                else:
-                    break
-            self.line1.set_data(self.x_data[index_start : -1], self.freq_data[0][index_start : -1])
-            self.line2.set_data(self.x_data[index_start : -1], self.freq_data[1][index_start : -1])
-            self.line3.set_data(self.x_data[index_start : -1], self.freq_data[2][index_start : -1])
-            self.line4.set_data(self.x_data[index_start : -1], self.freq_data[3][index_start : -1])
+        # if self.timer.time_elapsed() > 10:
+        #     window_start = round(self.timer.time_elapsed()) - 10
+
+        #     index_start = 0
+        #     for x in self.x_data:
+        #         if x < window_start:
+        #             index_start += 1
+        #         else:
+        #             break
+        #     self.line1.set_data(self.x_data[index_start : -1], self.freq_data[0][index_start : -1])
+        #     self.line2.set_data(self.x_data[index_start : -1], self.freq_data[1][index_start : -1])
+        #     self.line3.set_data(self.x_data[index_start : -1], self.freq_data[2][index_start : -1])
+        #     self.line4.set_data(self.x_data[index_start : -1], self.freq_data[3][index_start : -1])
+
+        if frame > 100:
+            window_start = frame/10 - 10
+
+            self.line1.set_data(self.x_data[-100 : -1], self.freq_data[0][-100 : -1])
+            self.line2.set_data(self.x_data[-100 : -1], self.freq_data[1][-100 : -1])
+            self.line3.set_data(self.x_data[-100 : -1], self.freq_data[2][-100 : -1])
+            self.line4.set_data(self.x_data[-100 : -1], self.freq_data[3][-100 : -1])
 
         self.ax.set_xlim(window_start, window_start + 10)
         
-        xticks = [2+window_start, 4+window_start, 6+window_start, 8+window_start, 10+window_start]
-        self.ax.set_xticks(xticks, labels=[str(x) for x in xticks])
+        # xticks = [window_start, 2+window_start, 4+window_start, 6+window_start, 8+window_start, 10+window_start]
+        # labels = [str(x) for x in xticks]
+        # # self.ax.set_xticks(xticks, labels=[str(2+window_start), str(4+window_start), str(6+window_start), str(8+window_start), str(10+window_start)])
+
+        # if window_start % 2 == 0:
+        #     self.ax.set_xticks(xticks, labels=labels)
 
         return self.line1, self.line2, self.line3, self.line4
 
@@ -184,8 +204,9 @@ class ModeTemplate:
         else:
             self.run = False
             self.screen.reset()
-            self.ani.event_source.stop()
+            # self.ani.event_source.stop()
             self.screen.congrats.place(x=50, y=625)
+            self.screen.event_generate("<<stopGraph>>")
             return False
 
     # Moves dot left

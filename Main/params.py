@@ -204,16 +204,18 @@ class Params(Tk):
                     errMessage = Label(self, text = "lamda values should be between -1 and 1.", fg = "red")
                     errMessage.grid(column = 1, row = 10)
 
-        # Initialize behavioral probabilities with user input
-        self.b10 = float(self.behaviors[0][1].get())
-        self.b20 = float(self.behaviors[1][1].get())
-        self.b30 = float(self.behaviors[2][1].get())
-        self.b40 = float(self.behaviors[3][1].get())
+        """ uncomment this section when running real application """
+        # # Initialize behavioral probabilities with user input
+        # self.b10 = float(self.behaviors[0][1].get())
+        # self.b20 = float(self.behaviors[1][1].get())
+        # self.b30 = float(self.behaviors[2][1].get())
+        # self.b40 = float(self.behaviors[3][1].get())
 
-        # Initialize values for number of data points, epsilon, and alpha with user input
-        self.points = int(self.dataNtr.get())
-        self.ep = float(self.epNtr.get())
-        self.alph = float(self.alphNtr.get())
+        # # Initialize values for number of data points, epsilon, and alpha with user input
+        # self.points = int(self.dataNtr.get())
+        # self.ep = float(self.epNtr.get())
+        # self.alph = float(self.alphNtr.get())
+        """ end uncomment"""
 
         self.event_generate("<<startGame>>")
         self.event_generate("<<startGraph>>")

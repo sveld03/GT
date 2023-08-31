@@ -56,7 +56,8 @@ class Game:
             self.screen.mode_label.config(text="Game Mode A")
             self.screen.mode_char = 'A'
             self.game_mode = ModeA(self.freqprof, self.Cursor, self.screen, timer, self.params.get_window())
-            self.game_mode.start()
+            self.screen.event_generate("<<startPrediction>>")
+            # self.game_mode.start()
 
     # Mode B: a specific sequence of 4 button presses moves dot right
     def modeB(self):
@@ -67,7 +68,8 @@ class Game:
             self.screen.mode_label.config(text="Game Mode B")
             self.screen.mode_char = 'B'
             self.game_mode = ModeB(self.freqprof, self.Cursor, self.screen, timer, self.params.get_window())
-            self.game_mode.start()
+            self.screen.event_generate("<<startPrediction>>")
+            # self.game_mode.start()
 
     # Mode C: double-click green for 1st half, red-yellow for 2nd half
     def modeC(self):
@@ -78,7 +80,8 @@ class Game:
             self.screen.mode_label.config(text="Game Mode C")
             self.screen.mode_char = 'C'
             self.game_mode = ModeC(self.freqprof, self.Cursor, self.screen, timer, self.get_window())
-            self.game_mode.start()
+            self.screen.event_generate("<<startPrediction>>")
+            # self.game_mode.start()
 
     # Mode 1: simplest probabilistic game
     def mode1(self):
@@ -89,7 +92,8 @@ class Game:
             self.screen.mode_label.config(text="Game Mode 1")
             self.screen.mode_char = '1'
             self.game_mode = Mode1(self.freqprof, self.Cursor, self.screen, timer, self.get_window())
-            self.game_mode.start()
+            self.screen.event_generate("<<startPrediction>>")
+            # self.game_mode.start()
 
     # Mode C: probability swap between two buttons
     def mode2(self):
@@ -100,7 +104,8 @@ class Game:
             self.screen.mode_label.config(text="Game Mode 2")
             self.screen.mode_char = '2'
             self.game_mode = Mode2(self.freqprof, self.Cursor, self.screen, timer, self.get_window())
-            self.game_mode.start()
+            self.screen.event_generate("<<startPrediction>>")
+            # self.game_mode.start()
 
 # Run the game
 if __name__ == "__main__":
