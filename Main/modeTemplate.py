@@ -3,14 +3,17 @@
 # Screen and utilities
 from infrastructure import *
 
+from params import *
+
 # Game mode A: simplest version, blue button moves dot right
 class ModeTemplate:
-    def __init__(self, freqprof, cursor, screen, timer, window):
+    def __init__(self, freqprof, cursor, screen, timer, params):
         
+        self.params = params
         self.screen = screen
         self.run = True
 
-        self.window = window
+        self.window = self.params.get_window()
         
         # Get access to buttons on screen
         self.btnB = self.screen.btnB
@@ -19,8 +22,8 @@ class ModeTemplate:
         self.btnY = self.screen.btnY
 
         self.mode_char = self.screen.mode_char
-        self.player_name = self.screen.nameNtr.get()
-        self.trial_number = self.screen.trialNtr.get()
+        self.player_name = self.params.nameNtr.get()
+        self.trial_number = self.params.trialNtr.get()
 
         # Game stopwatch
         self.timer = timer
@@ -40,25 +43,22 @@ class ModeTemplate:
 
         self.queue = queue.Queue()
 
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.axs = plt.subplots(2, 1, sharex=True, sharey=True)
+        self.ax = self.axs[0]
         self.line1, = self.ax.plot([], [], 'b', linestyle='solid', label="Behavior 1")
         self.line2, = self.ax.plot([], [], 'r', linestyle='solid', label="Behavior 2")
         self.line3, = self.ax.plot([], [], 'g', linestyle='solid', label="Behavior 3")
         self.line4, = self.ax.plot([], [], 'y', linestyle='solid', label="Behavior 4")
 
-        self.ax.set_ylim(0, 1)
-        self.ax.set_xlim(0, 10)
+        # self.ax.set_ylim(0, 1)
+        # self.ax.set_xlim(0, 10)
 
         self.assign_btnB()
         self.assign_btnR()
         self.assign_btnG()
         self.assign_btnY()
 
-        self.ax.set_xticks([0, 2, 4, 6, 8, 10], labels=["-10", "-8", "-6", "-4", "-2", "0"])
-
-    # def start(self):
-
-        # self.animate()
+        # self.ax.set_xticks([0, 2, 4, 6, 8, 10], labels=["-10", "-8", "-6", "-4", "-2", "0"])
 
     def update_clicks(self, button):
         self.button_clicks[button] = 1
@@ -134,25 +134,12 @@ class ModeTemplate:
         for i in range(4):
             self.freq_data[i].append(new_freq_data[i])
 
-        self.line1.set_data(self.x_data, self.freq_data[0])
-        self.line2.set_data(self.x_data, self.freq_data[1])
-        self.line3.set_data(self.x_data, self.freq_data[2])
-        self.line4.set_data(self.x_data, self.freq_data[3])
-
         window_start = 0
-        # if self.timer.time_elapsed() > 10:
-        #     window_start = round(self.timer.time_elapsed()) - 10
-
-        #     index_start = 0
-        #     for x in self.x_data:
-        #         if x < window_start:
-        #             index_start += 1
-        #         else:
-        #             break
-        #     self.line1.set_data(self.x_data[index_start : -1], self.freq_data[0][index_start : -1])
-        #     self.line2.set_data(self.x_data[index_start : -1], self.freq_data[1][index_start : -1])
-        #     self.line3.set_data(self.x_data[index_start : -1], self.freq_data[2][index_start : -1])
-        #     self.line4.set_data(self.x_data[index_start : -1], self.freq_data[3][index_start : -1])
+        if frame <= 100:
+            self.line1.set_data(self.x_data, self.freq_data[0])
+            self.line2.set_data(self.x_data, self.freq_data[1])
+            self.line3.set_data(self.x_data, self.freq_data[2])
+            self.line4.set_data(self.x_data, self.freq_data[3])
 
         if frame > 100:
             window_start = frame/10 - 10
@@ -162,7 +149,7 @@ class ModeTemplate:
             self.line3.set_data(self.x_data[-100 : -1], self.freq_data[2][-100 : -1])
             self.line4.set_data(self.x_data[-100 : -1], self.freq_data[3][-100 : -1])
 
-        self.ax.set_xlim(window_start, window_start + 10)
+        # self.ax.set_xlim(window_start, window_start + 10)
         
         # xticks = [window_start, 2+window_start, 4+window_start, 6+window_start, 8+window_start, 10+window_start]
         # labels = [str(x) for x in xticks]
@@ -172,15 +159,6 @@ class ModeTemplate:
         #     self.ax.set_xticks(xticks, labels=labels)
 
         return self.line1, self.line2, self.line3, self.line4
-
-    def animate(self):
-
-        # Create an animation that updates the plot every 0.1 seconds
-        self.ani = FuncAnimation(self.fig, self.record_data, frames=itertools.count(), interval=100, blit=True, save_count=MAX_FRAMES)
-
-        # Display the plot
-        plt.legend()
-        plt.show()
 
     # Button assignment functions; same for all game modes
 

@@ -16,38 +16,34 @@ class realTimeGrapher:
     def start(self, event):
 
         self.x_data = [0]
-        self.y_data = [[.15], [.01], [.01], [.01]]
-        self.ep = .06
-        self.alph = 0
-        self.points = 100
-        self.lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, -.2, 0, 0, 0], [0, 0, -.2, 0, 0], [0, 0, 0, -.2, 0]]
-
-        """ uncomment this section when running real application """
-        # self.x_data = [0]
-        # self.y_data = [[self.params.b10], [self.params.b20], [self.params.b30], [self.params.b40]]
-        # self.ep = self.params.ep
-        # self.alph = self.params.alph
-        # self.points = self.params.points
-        # self.lm = self.params.lm
-        """ end uncomment"""
+        self.y_data = [[self.params.b10], [self.params.b20], [self.params.b30], [self.params.b40]]
+        self.ep = self.params.ep
+        self.alph = self.params.alph
+        self.points = self.params.points
+        self.lm = self.params.lm
 
         self.fig = self.game.game_mode.fig
-        self.ax = self.game.game_mode.ax
-        self.line1, = self.ax.plot([], [], 'b', linestyle='dashed', label="Behavior 1: predicted")
-        self.line2, = self.ax.plot([], [], 'r', linestyle='dashed', label="Behavior 2: predicted")
-        self.line3, = self.ax.plot([], [], 'g', linestyle='dashed', label="Behavior 3: predicted")
-        self.line4, = self.ax.plot([], [], 'y', linestyle='dashed', label="Behavior 4: predicted")
+        self.ax = self.game.game_mode.axs[1]
+        self.line1, = self.ax.plot([], [], 'b', linestyle='solid')
+        self.line2, = self.ax.plot([], [], 'r', linestyle='solid')
+        self.line3, = self.ax.plot([], [], 'g', linestyle='solid')
+        self.line4, = self.ax.plot([], [], 'y', linestyle='solid')
 
-        # self.ax.set_ylim(0, 1)
-        # self.ax.set_xlim(0, 1)
-
-        # self.ax.set_xticks([.2, .4, .6, .8, 1], ['2', '4', '6', '8', '10'])
+        self.ax.set_ylim(0, 1)
+        self.ax.set_xlim(0, 13)
+        self.ax.set_xticks([0, 2, 4, 6, 8, 10, 12], labels=["-10", "-8", "-6", "-4", "-2", "0", "+2"])
 
         self.game.game_mode.screen.bind("<<stopGraph>>", self.stop)
 
+        for num in range(1, 31):
+            data = self.generate_one_cycle(-1)
+            self.x_data.append(num * .1)
+            for num in range(4):
+                self.y_data[num].append(data[num])
+
         self.animate()
 
-    def generate_one_cycle(self):
+    def generate_one_cycle(self, frame):
 
         length = len(self.y_data[0])
         if length == 1:
@@ -87,7 +83,9 @@ class realTimeGrapher:
                 intEffect += im[y][z]
             cur = bvals[y][-1]
 
-            correction = self.correct(cur, y - 1)
+            correction = 0
+            if frame > 0:
+                correction = self.correct(cur, y - 1)
 
             change = epEffect + alphEffect + intEffect + correction
             bNext = cur + change
@@ -106,29 +104,47 @@ class realTimeGrapher:
     def genGraph(self, frame):
 
         # Generate a list of behavioral probabilities over time
-        b_values = self.generate_one_cycle()
+        b_values = self.generate_one_cycle(frame)
 
-        self.x_data.append(frame * .1)
+
+        self.x_data.append((frame * .1) + 3)
         for num in range(4):
             self.y_data[num].append(b_values[num])
 
-        self.line1.set_data(self.x_data, self.y_data[0])
-        self.line2.set_data(self.x_data, self.y_data[1])
-        self.line3.set_data(self.x_data, self.y_data[2])
-        self.line4.set_data(self.x_data, self.y_data[3])
+        window_start = 0
+        if frame <= 100:
+            self.line1.set_data(self.x_data, self.y_data[0])
+            self.line2.set_data(self.x_data, self.y_data[1])
+            self.line3.set_data(self.x_data, self.y_data[2])
+            self.line4.set_data(self.x_data, self.y_data[3])
+
+        if frame > 100:
+            window_start = frame/10 - 10
+
+            self.line1.set_data(self.x_data[-130 : -1], self.y_data[0][-130 : -1])
+            self.line2.set_data(self.x_data[-130 : -1], self.y_data[1][-130 : -1])
+            self.line3.set_data(self.x_data[-130 : -1], self.y_data[2][-130 : -1])
+            self.line4.set_data(self.x_data[-130 : -1], self.y_data[3][-130 : -1])
+
+        self.ax.set_xlim(window_start, window_start + 13)
 
         self.game.game_mode.record_data(frame)
-
-        # print("Prob: " + str(len(self.x_data)) + "  Freq: " + str(len(self.game.game_mode.x_data)))
 
         return self.game.game_mode.line1, self.game.game_mode.line2, self.game.game_mode.line3, self.game.game_mode.line4, self.line1, self.line2, self.line3, self.line4
 
     def animate(self):
         self.ani = FuncAnimation(self.fig, self.genGraph, frames=itertools.count(), interval=100, blit=True, save_count=MAX_FRAMES)
 
-        plt.xlabel('Time to present (seconds)')
-        plt.ylabel('Behavioral Probabilities and Frequencies')
+        # self.fig.set_figwidth(9.75)
+        # self.game.game_mode.fig.set_figwidth(7.5)
+        
+        self.ax.set_xlabel('Time to present (seconds)')
+        self.ax.set_ylabel('Behavioral Probabilities')
         self.fig.legend()
+
+        self.game.game_mode.ax.set_xlabel('Time to present (seconds)')
+        self.game.game_mode.ax.set_ylabel('Behavioral Frequencies')
+        self.game.game_mode.fig.legend()
 
         plt.show()
 

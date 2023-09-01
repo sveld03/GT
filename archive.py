@@ -726,6 +726,20 @@
     #             print(f"{button}: {count}")
     #         self.plot_data()
 
+    # if self.timer.time_elapsed() > 10:
+        #     window_start = round(self.timer.time_elapsed()) - 10
+
+        #     index_start = 0
+        #     for x in self.x_data:
+        #         if x < window_start:
+        #             index_start += 1
+        #         else:
+        #             break
+        #     self.line1.set_data(self.x_data[index_start : -1], self.freq_data[0][index_start : -1])
+        #     self.line2.set_data(self.x_data[index_start : -1], self.freq_data[1][index_start : -1])
+        #     self.line3.set_data(self.x_data[index_start : -1], self.freq_data[2][index_start : -1])
+        #     self.line4.set_data(self.x_data[index_start : -1], self.freq_data[3][index_start : -1])
+
 """grapher.py"""
 # def fourClicked():
     #     prob = Label(lvl2, text = "Enter Initial Probabilities")
@@ -735,3 +749,20 @@
     #     behav1Ntr = Entry(lvl2, width = 10)
     #     behav1Ntr.grid(column = 1, row = 1)
     #     lbl.configure(text = prob + behav1 + behav1Ntr)
+
+"""params.py"""
+# # help button on menu
+        # def helpClicked():
+        #     lbl.configure(text = "epsilon is the extinction rate," \
+        #                         " change this value and see how the graph changes")
+
+        # # menu: help + # of self.behaviors
+        # menu = Menu(self)
+        # lvl1 = Menu(menu)
+        # lvl2 = Menu(lvl1)
+        # menu.add_cascade(label='Menu', menu=lvl1)
+        # lvl1.add_command(label='Help', command=helpClicked)
+        # lvl1.add_cascade(label="# of self.behaviors", menu=lvl2)
+        # lvl2.add_command(label='4')
+        # lvl2.add_command(label='5')
+        # self.config(menu=menu)

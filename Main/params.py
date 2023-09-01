@@ -3,6 +3,7 @@ from game import *
 # primary graphics library
 from tkinter import *
 
+from tkinter import ttk
 
 # # data visualization
 
@@ -46,6 +47,7 @@ class matrix(Frame):
                 # Remaining 4x4 grid is for lambda entry
                 else:
                     self.entries[counter] = Entry(self, width=5)
+                    self.entries[counter].insert(0, '0')
                 self.entries[counter].grid(row=row, column=column) 
                 counter += 1
 
@@ -59,22 +61,6 @@ class Params(Tk):
         # set geometry (widthxheight)
         self.geometry('700x400')
 
-        # help button on menu
-        def helpClicked():
-            lbl.configure(text = "epsilon is the extinction rate," \
-                                " change this value and see how the graph changes")
-
-        # menu: help + # of self.behaviors
-        menu = Menu(self)
-        lvl1 = Menu(menu)
-        lvl2 = Menu(lvl1)
-        menu.add_cascade(label='Menu', menu=lvl1)
-        lvl1.add_command(label='Help', command=helpClicked)
-        lvl1.add_cascade(label="# of self.behaviors", menu=lvl2)
-        lvl2.add_command(label='4')
-        lvl2.add_command(label='5')
-        self.config(menu=menu)
-
         # add label to self window
         lbl = Label(self, text = "Delta")
         lbl.grid(column = 2, row = 0)
@@ -87,24 +73,33 @@ class Params(Tk):
         epLbl.grid(column = 0, row = 1)
         self.epNtr = Entry(self, width=10)
         self.epNtr.grid(column=1, row=1)
+        self.epNtr.insert(0, '.01')
+
         self.deltENtr = Entry(self, width=10)
         self.deltENtr.grid(column = 2, row = 1)
+        self.deltENtr.insert(0, '.05')
 
         # alpha
         alphLbl = Label(self, text = "Alpha: ")
         alphLbl.grid(column = 0, row = 2)
         self.alphNtr = Entry(self, width=10)
         self.alphNtr.grid(column=1, row=2)
+        self.alphNtr.insert(0, '.01')
+
         self.deltANtr = Entry(self, width=10)
         self.deltANtr.grid(column = 2, row = 2)
+        self.deltANtr.insert(0, '.05')
 
         # reinforcer
         rfLbl = Label(self, text = "Reinforcer: ")
         rfLbl.grid(column = 0, row = 3)
         self.rfNtr = Entry(self, width=10)
         self.rfNtr.grid(column=1, row=3)
+        self.rfNtr.insert(0, '0')
+
         self.deltRNtr = Entry(self, width=10)
         self.deltRNtr.grid(column = 2, row = 3)
+        self.deltRNtr.insert(0, '.05')
 
         # self.behaviors
         probLbl = Label(self, text ="Initial Probabilities")
@@ -118,6 +113,7 @@ class Params(Tk):
 
             self.behaviors[num].append(Entry(self, width = 10))
             self.behaviors[num][1].grid(column = 1, row = num + 5)
+            self.behaviors[num][1].insert(0, '.01')
 
         # lambda matrix title
         lambdaLbl = Label(self, text = "Lambda Matrix", pady=15)
@@ -136,28 +132,64 @@ class Params(Tk):
 
         self.lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
+        # User name
+        self.nameLbl = Label(self, text="Enter your name here: ")
+        self.nameLbl.grid(column=4, row=1)
+        self.nameNtr = Entry(self, width=10)
+        self.nameNtr.grid(column=5, row=1)
+
+        # Trial number
+        self.trialLbl = Label(self, text = "Trial: ")
+        self.trialLbl.grid(column=4, row=2)
+        self.trialNtr = Entry(self, width=10)
+        self.trialNtr.grid(column=5, row=2)
+        self.trialNtr.insert(0, '1')
+
         # data points
         dataLbl = Label(self, text = "Data Points: ")
-        dataLbl.grid(column = 4, row = 1)
+        dataLbl.grid(column = 4, row = 4)
         self.dataNtr = Entry(self, width=10)
-        self.dataNtr.grid(column=5, row=1)
+        self.dataNtr.grid(column=5, row=4)
+        self.dataNtr.insert(0, '99999')
 
         # iterations
         iterLbl = Label(self, text = "Iterations: ")
-        iterLbl.grid(column = 4, row = 2)
+        iterLbl.grid(column = 4, row = 5)
         self.iterNtr = Entry(self, width=10)
-        self.iterNtr.grid(column=5, row=2)
+        self.iterNtr.grid(column=5, row=5)
+        self.iterNtr.insert(0, '1')
+
+        game_settings = Label(self, text="Game Settings:")
+        game_settings.grid(column=4, row=7)
+
+        self.present_modes()
 
         windowLbl = Label(self, text = "Frequency profile window length (seconds):")
-        windowLbl.grid(column = 4, row = 6)
+        windowLbl.grid(column = 4, row = 11)
         self.windowNtr = Entry(self, width=10)
-        self.windowNtr.grid(column = 5, row = 6)
+        self.windowNtr.grid(column = 5, row = 11)
+        self.windowNtr.insert(0, '3')
 
         # submit button
         submit = Button(self, text = "Generate Graph", fg = "red", command=self.store_params)
 
         # set Button grid
-        submit.grid(column=5, row=10)
+        submit.grid(column=5, row=13)
+
+    # Game mode menu
+    def present_modes(self):
+        self.mode = StringVar(self, "none")
+        
+        self.btnA = ttk.Radiobutton(self, text="Game Mode A", value="A", variable=self.mode)
+        self.btnA.grid(column=4, row=8)
+        self.btnB = ttk.Radiobutton(self, text="Game Mode B", value="B", variable=self.mode)
+        self.btnB.grid(column=5, row=8)
+        self.btnC = ttk.Radiobutton(self, text="Game Mode C", value="C", variable=self.mode)
+        self.btnC.grid(column=4, row=9)
+        self.btn1 = ttk.Radiobutton(self, text="Game Mode 1", value="1", variable=self.mode)
+        self.btn1.grid(column=5, row=9)
+        self.btn2 = ttk.Radiobutton(self, text="Game Mode 2", value="2", variable=self.mode)
+        self.btn2.grid(column=4, row=10)
 
     def store_params(self):
         # Fill in lambda matrix list with user-inputted values
@@ -204,18 +236,16 @@ class Params(Tk):
                     errMessage = Label(self, text = "lamda values should be between -1 and 1.", fg = "red")
                     errMessage.grid(column = 1, row = 10)
 
-        """ uncomment this section when running real application """
-        # # Initialize behavioral probabilities with user input
-        # self.b10 = float(self.behaviors[0][1].get())
-        # self.b20 = float(self.behaviors[1][1].get())
-        # self.b30 = float(self.behaviors[2][1].get())
-        # self.b40 = float(self.behaviors[3][1].get())
+        # Initialize behavioral probabilities with user input
+        self.b10 = float(self.behaviors[0][1].get())
+        self.b20 = float(self.behaviors[1][1].get())
+        self.b30 = float(self.behaviors[2][1].get())
+        self.b40 = float(self.behaviors[3][1].get())
 
-        # # Initialize values for number of data points, epsilon, and alpha with user input
-        # self.points = int(self.dataNtr.get())
-        # self.ep = float(self.epNtr.get())
-        # self.alph = float(self.alphNtr.get())
-        """ end uncomment"""
+        # Initialize values for number of data points, epsilon, and alpha with user input
+        self.points = int(self.dataNtr.get())
+        self.ep = float(self.epNtr.get())
+        self.alph = float(self.alphNtr.get())
 
         self.event_generate("<<startGame>>")
         self.event_generate("<<startGraph>>")

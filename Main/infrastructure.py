@@ -50,18 +50,9 @@ class Screen(Tk):
         subtitle = Label(self, text = "Choose game mode above, then click the buttons to get the dot to the right side of the screen. Have fun! :)")
         subtitle.place(anchor='nw')
 
-        # User name
-        self.nameLbl = Label(self, text="Enter your name here: ")
-        self.nameLbl.place(x=750, y=25)
         self.nameNtr = Entry(self, width=10)
-        self.nameNtr.place(x=880, y=25)
 
-        # Trial number
-        self.trialLbl = Label(self, text = "Trial: ")
-        self.trialLbl.place(x=1000, y=25)
         self.trialNtr = Entry(self, width=10)
-        self.trialNtr.place(x=1050, y=25)
-        self.trialNtr.insert(0, '1')
 
         # Game mode
         self.mode_char = '0'
@@ -94,7 +85,7 @@ class Screen(Tk):
 
         # Create buttons and menu
         self.create_buttons()
-        self.create_menu()
+        # self.create_menu()
 
     # Creates 4 buttons, which start with no function and have different functions in each game mode (user can click buttons to move dot)
     def create_buttons(self):
@@ -111,12 +102,12 @@ class Screen(Tk):
         self.btnG.place(x='325', y='30')
         self.btnY.place(x='450', y='30')
 
-    # Game mode menu
-    def create_menu(self):
-        self.menubar = Menu(self)
-        self.config(menu=self.menubar)
-        self.game_menu = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="Game Modes", menu=self.game_menu)
+    # # Game mode menu
+    # def create_menu(self):
+    #     self.menubar = Menu(self)
+    #     self.config(menu=self.menubar)
+    #     self.game_menu = Menu(self.menubar, tearoff=0)
+    #     self.menubar.add_cascade(label="Game Modes", menu=self.game_menu)
     
     # Resets screen: game mode, button functions, dot position
     def reset(self):
