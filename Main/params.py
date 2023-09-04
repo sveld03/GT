@@ -1,5 +1,3 @@
-from game import *
-
 # primary graphics library
 from tkinter import *
 

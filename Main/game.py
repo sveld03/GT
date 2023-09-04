@@ -1,5 +1,6 @@
 # Screen and utilities
 from infrastructure import *
+from params import *
 
 # Game modes
 from modeA import ModeA
@@ -35,6 +36,13 @@ class Game:
         # database connection
         self.freqprof = sqlite3.connect('freqprof.db')
         self.Cursor = self.freqprof.cursor()
+
+        # self.Cursor.execute('CREATE TABLE Frequencies (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, B5 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
+        # self.Cursor.execute('CREATE TABLE Probabilities (id INTEGER, B1 REAL, B2 REAL, B3 REAL, B4 REAL, B5 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
+        # self.Cursor.execute('CREATE TABLE Accuracy (id INTEGER, B1 REAL, B2 REAL, B3 REAL, B4 REAL, B5 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
+        # self.Cursor.execute('SELECT * FROM Frequencies JOIN Probabilities ON Frequencies.id = Probabilities.id JOIN Accuracy ON Frequencies.id = Accuracy.id')
+
+        # self.freqprof.commit()
 
         self.params.bind("<<startGame>>", self.start)
 
@@ -117,5 +125,6 @@ if __name__ == "__main__":
     # testRoot.title("real-time test")
 
     screen = Screen()
-    game = Game(screen)
+    params = Params()
+    game = Game(screen, params)
     game.screen.mainloop()

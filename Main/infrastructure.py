@@ -29,7 +29,7 @@ MAX_FRAMES = 3000
 # table name: FreqProf
 # table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
 
-# Cursor.execute('CREATE TABLE FreqProf (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 INTEGER, B2 INTEGER, B3 INTEGER, B4 INTEGER, B5 INTEGER, time REAL)')
+# Cursor.execute('CREATE TABLE FreqProf (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 INTEGER, B2 INTEGER, B3 INTEGER, B4 INTEGER, B5 INTEGER, time REAL, mode TEXT, name TEXT, trial TEXT)')
 
 
 # Game display: canvas, buttons, menu, etc.
@@ -47,12 +47,8 @@ class Screen(Tk):
         self.resizable(width=False, height=False)
 
         # instructions
-        subtitle = Label(self, text = "Choose game mode above, then click the buttons to get the dot to the right side of the screen. Have fun! :)")
+        subtitle = Label(self, text = "Click the buttons to get the dot to the right side of the screen. Have fun! :)")
         subtitle.place(anchor='nw')
-
-        self.nameNtr = Entry(self, width=10)
-
-        self.trialNtr = Entry(self, width=10)
 
         # Game mode
         self.mode_char = '0'
@@ -152,30 +148,63 @@ def truncate_after_first_decimal(number):
 # Records blue botton clicks
 def record_blue(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks blue button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(1, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
+    
+    Cursor.execute('SELECT time FROM FreqProf WHERE name=? AND mode=? and trial=? ORDER BY id DESC LIMIT 1', (name, game_mode, trial))
+    last_time = Cursor.fetchone()
+    cur_time = truncate_after_first_decimal(timer.time_elapsed())
+    if last_time is not None and cur_time > float(last_time[0]) + .18:
+        Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time - .1, trial))
+    
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(1, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time, trial))
     freqprof.commit()
-    # TO DO: when blue button is clicked, add this data point to the real-time frequency profile
-    # plt.plot(timer.time_elapsed(), 1, 'b', linestyle='solid')
 
 # Records red button clicks
 def record_red(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks red button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 1, 0, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
+    
+    Cursor.execute('SELECT time FROM FreqProf WHERE name=? AND mode=? and trial=? ORDER BY id DESC LIMIT 1', (name, game_mode, trial))
+    last_time = Cursor.fetchone()
+    cur_time = truncate_after_first_decimal(timer.time_elapsed())
+    if last_time is not None and cur_time > float(last_time[0]) + .18:
+        Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time - .1, trial))
+    
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 1, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time, trial))
     freqprof.commit()
 
 # Records green button clicks
 def record_green(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks green button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 1, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
+    
+    Cursor.execute('SELECT time FROM FreqProf WHERE name=? AND mode=? and trial=? ORDER BY id DESC LIMIT 1', (name, game_mode, trial))
+    last_time = Cursor.fetchone()
+    cur_time = truncate_after_first_decimal(timer.time_elapsed())
+    if last_time is not None and cur_time > float(last_time[0]) + .18:
+        Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time - .1, trial))
+    
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 1, 0, ?, ?, ?, ?)', (game_mode, name, cur_time, trial))
     freqprof.commit()
 
 # Records yellow button clicks
 def record_yellow(Cursor, freqprof, timer, game_mode, name, trial):
     # When user clicks yellow button, this function inserts a row into the SQLite database, recording the click as a 1 and all the relevant game info
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 1, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
+    
+    Cursor.execute('SELECT time FROM FreqProf WHERE name=? AND mode=? and trial=? ORDER BY id DESC LIMIT 1', (name, game_mode, trial))
+    last_time = Cursor.fetchone()
+    cur_time = truncate_after_first_decimal(timer.time_elapsed())
+    if last_time is not None and cur_time > float(last_time[0]) + .18:
+        Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time - .1, trial))
+    
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 1, ?, ?, ?, ?)', (game_mode, name, cur_time, trial))
     freqprof.commit()
 
 def record_none(Cursor, freqprof, timer, game_mode, name, trial):
-    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, truncate_after_first_decimal(timer.time_elapsed()), trial))
+    
+    Cursor.execute('SELECT time FROM FreqProf WHERE name=? AND mode=? and trial=? ORDER BY id DESC LIMIT 1', (name, game_mode, trial))
+    last_time = Cursor.fetchone()
+    cur_time = truncate_after_first_decimal(timer.time_elapsed())
+    if last_time is not None and cur_time > float(last_time[0]) + .18:
+        Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time - .1, trial))
+    
+    Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 0, ?, ?, ?, ?)', (game_mode, name, cur_time, trial))
     freqprof.commit()
         

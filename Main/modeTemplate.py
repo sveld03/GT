@@ -43,8 +43,9 @@ class ModeTemplate:
 
         self.queue = queue.Queue()
 
-        self.fig, self.axs = plt.subplots(2, 1, sharex=True, sharey=True)
-        self.ax = self.axs[0]
+        self.fig, self.axs = plt.subplots(3, 1, sharex=True, sharey=False)
+        self.ax = self.axs[2]
+        self.ax.set_ylim(0, 1)
         self.line1, = self.ax.plot([], [], 'b', linestyle='solid', label="Behavior 1")
         self.line2, = self.ax.plot([], [], 'r', linestyle='solid', label="Behavior 2")
         self.line3, = self.ax.plot([], [], 'g', linestyle='solid', label="Behavior 3")
@@ -144,10 +145,10 @@ class ModeTemplate:
         if frame > 100:
             window_start = frame/10 - 10
 
-            self.line1.set_data(self.x_data[-100 : -1], self.freq_data[0][-100 : -1])
-            self.line2.set_data(self.x_data[-100 : -1], self.freq_data[1][-100 : -1])
-            self.line3.set_data(self.x_data[-100 : -1], self.freq_data[2][-100 : -1])
-            self.line4.set_data(self.x_data[-100 : -1], self.freq_data[3][-100 : -1])
+            self.line1.set_data(self.x_data[-100:], self.freq_data[0][-100:])
+            self.line2.set_data(self.x_data[-100:], self.freq_data[1][-100:])
+            self.line3.set_data(self.x_data[-100:], self.freq_data[2][-100:])
+            self.line4.set_data(self.x_data[-100:], self.freq_data[3][-100:])
 
         # self.ax.set_xlim(window_start, window_start + 10)
         
