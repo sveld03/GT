@@ -37,10 +37,13 @@ class Game:
         self.freqprof = sqlite3.connect('freqprof.db')
         self.Cursor = self.freqprof.cursor()
 
-        # self.Cursor.execute('CREATE TABLE Frequencies (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, B5 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
-        # self.Cursor.execute('CREATE TABLE Probabilities (id INTEGER, B1 REAL, B2 REAL, B3 REAL, B4 REAL, B5 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
-        # self.Cursor.execute('CREATE TABLE Accuracy (id INTEGER, B1 REAL, B2 REAL, B3 REAL, B4 REAL, B5 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
-        # self.Cursor.execute('SELECT * FROM Frequencies JOIN Probabilities ON Frequencies.id = Probabilities.id JOIN Accuracy ON Frequencies.id = Accuracy.id')
+        # self.Cursor.execute('CREATE TABLE Frequencies (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
+        # self.Cursor.execute('CREATE TABLE Probabilities (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
+        # self.Cursor.execute('CREATE TABLE Accuracies (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, mean REAL, cumulative REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
+        # self.Cursor.execute('CREATE TABLE Parameters (id INTEGER PRIMARY KEY AUTOINCREMENT, epsilon REAL, alpha REAL, l12 REAL, l13 REAL, l14 REAL, l21 REAL, l23 REAL, l24 REAL, l31 REAL, l32 REAL, l34 REAL, l41 REAL, l42 REAL, l43 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
+        # self.Cursor.execute('DROP TABLE IF EXISTS Accuracy')
+        # self.Cursor.execute('DROP TABLE IF EXISTS Frequencies')
+        # self.Cursor.execute('DROP TABLE IF EXISTS Probabilities')
 
         # self.freqprof.commit()
 
@@ -127,4 +130,4 @@ if __name__ == "__main__":
     screen = Screen()
     params = Params()
     game = Game(screen, params)
-    game.screen.mainloop()
+    # game.screen.mainloop()

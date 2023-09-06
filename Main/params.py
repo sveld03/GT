@@ -128,7 +128,7 @@ class Params(Tk):
         self.data = matrix()
         self.data.grid(column = 1, row = 11)
 
-        self.lm = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+        self.lm = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
         # User name
         self.nameLbl = Label(self, text="Enter your name here: ")
@@ -192,44 +192,44 @@ class Params(Tk):
     def store_params(self):
         # Fill in lambda matrix list with user-inputted values
         if self.data.entries[7].get() != '':
-            self.lm[1][2] = float(self.data.entries[7].get())
+            self.lm[0][1] = float(self.data.entries[7].get())
         
         if self.data.entries[11].get() != '':
-            self.lm[2][1] = float(self.data.entries[11].get())
+            self.lm[1][0] = float(self.data.entries[11].get())
 
         if self.data.entries[8].get() != '':
-            self.lm[1][3] = float(self.data.entries[8].get())
+            self.lm[0][2] = float(self.data.entries[8].get())
 
         if self.data.entries[16].get() != '':
-            self.lm[3][1] = float(self.data.entries[16].get())
+            self.lm[2][0] = float(self.data.entries[16].get())
 
         if self.data.entries[9].get() != '':
-            self.lm[1][4] = float(self.data.entries[9].get())
+            self.lm[0][3] = float(self.data.entries[9].get())
 
         if self.data.entries[21].get() != '':
-            self.lm[4][1] = float(self.data.entries[21].get())
+            self.lm[3][0] = float(self.data.entries[21].get())
 
         if self.data.entries[13].get() != '':
-            self.lm[2][3] = float(self.data.entries[13].get())
+            self.lm[1][2] = float(self.data.entries[13].get())
 
         if self.data.entries[17].get() != '':
-            self.lm[3][2] = float(self.data.entries[17].get())
+            self.lm[2][1] = float(self.data.entries[17].get())
 
         if self.data.entries[14].get() != '':
-            self.lm[2][4] = float(self.data.entries[14].get())
+            self.lm[1][3] = float(self.data.entries[14].get())
         
         if self.data.entries[22].get() != '':
-            self.lm[4][2] = float(self.data.entries[22].get())
+            self.lm[3][1] = float(self.data.entries[22].get())
 
         if self.data.entries[19].get() != '':
-            self.lm[3][4] = float(self.data.entries[19].get())
+            self.lm[2][3] = float(self.data.entries[19].get())
 
         if self.data.entries[23].get() != '':
-            self.lm[4][3] = float(self.data.entries[23].get())
+            self.lm[3][2] = float(self.data.entries[23].get())
 
         # If any lambda values have abs value greater than 1, throw error
-        for row in range(5):
-            for column in range(5):
+        for row in range(4):
+            for column in range(4):
                 if self.lm[row][column] < -1 or self.lm[row][column] > 1:
                     errMessage = Label(self, text = "lamda values should be between -1 and 1.", fg = "red")
                     errMessage.grid(column = 1, row = 10)

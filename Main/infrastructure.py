@@ -25,6 +25,7 @@ import threading
 import queue
 
 MAX_FRAMES = 3000
+PREDICTION_TIME = 1
 
 # table name: FreqProf
 # table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
