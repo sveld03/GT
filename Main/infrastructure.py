@@ -99,12 +99,11 @@ class Screen(Tk):
         self.btnG.place(x='325', y='30')
         self.btnY.place(x='450', y='30')
 
-    # # Game mode menu
-    # def create_menu(self):
-    #     self.menubar = Menu(self)
-    #     self.config(menu=self.menubar)
-    #     self.game_menu = Menu(self.menubar, tearoff=0)
-    #     self.menubar.add_cascade(label="Game Modes", menu=self.game_menu)
+        self.stop = Button(self, width='9', height='4', bg='red', text="Stop Graph", command=self.stopGraph)
+        self.stop.place(x='1200', y='25')
+
+    def stopGraph(self):
+        self.event_generate("<<stopGraph>>")
     
     # Resets screen: game mode, button functions, dot position
     def reset(self):

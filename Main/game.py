@@ -6,6 +6,7 @@ from params import *
 from modeA import ModeA
 from modeB import ModeB
 from modeC import ModeC
+from modeD import ModeD
 from mode1 import Mode1
 from mode2 import Mode2
 
@@ -58,6 +59,8 @@ class Game:
             self.modeB()
         elif self.params.mode.get() == "C":
             self.modeC()
+        elif self.params.mode.get() == "D":
+            self.modeD()
         elif self.params.mode.get() == "1":
             self.mode1()
         elif self.params.mode.get() == "2":
@@ -98,6 +101,16 @@ class Game:
         self.game_mode = ModeC(self.freqprof, self.Cursor, self.screen, timer, self.params)
         self.screen.event_generate("<<startPrediction>>")
         # self.game_mode.start()
+
+    # Mode C: meant to produce the first two curves of the Default Probability Profile (DPP)
+    def modeD(self):
+        self.screen.reset()
+        self.screen.congrats.place_forget()
+        timer = Timer()
+        self.screen.mode_label.config(text="Game Mode D")
+        self.screen.mode_char = 'D'
+        self.game_mode = ModeD(self.freqprof, self.Cursor, self.screen, timer, self.params)
+        self.screen.event_generate("<<startPrediction>>")
 
     # Mode 1: simplest probabilistic game
     def mode1(self):

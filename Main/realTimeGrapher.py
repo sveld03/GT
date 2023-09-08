@@ -62,7 +62,7 @@ class realTimeGrapher:
             for num in range(4):
                 self.y_data[num].append(data[num])
 
-        self.animate()
+        self.game.game_mode.screen.bind("<<buttonClicked>>", self.animate)
 
     def generate_one_cycle(self, frame):
 
@@ -73,16 +73,20 @@ class realTimeGrapher:
             bvals = [[self.y_data[0][-2], self.y_data[0][-1]], [self.y_data[1][-2], self.y_data[1][-1]], [self.y_data[2][-2], self.y_data[2][-1]], [self.y_data[3][-2], self.y_data[3][-1]]]
 
         # extinction matrix (quantity of decrease by extinction for each behavior)
-        em = [0]
+        em = []
 
         # reinforcement matrix (quantity of increase by reinforcement for each behavior)
-        am = [0]
+        am = []
 
         # interaction matrix (the interaction effects between each pair of self.behaviors, before summation)
         # encapsulates equations 3 (resurgence) and 4 (automatic chaining)
         im = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
-        self.correct()
+        # self.correct()
+
+        freq_data = self.game.game_mode.freq_data
+        if len(freq_data) < 2:
+            freq_data = [0, 0]
         
         # populate matrices with values for this cycle
         for y in range(4):
@@ -90,15 +94,21 @@ class realTimeGrapher:
             am.append((1 - bvals[y][-1]) * self.alph)
             for z in range(4):
                 if (y != z and len(bvals[z]) >= 2 and self.lm[y][z] >= -1 and self.lm[y][z] <= 1):
-                    # if (self.lm[y][z] < 0 and bvals[z][-1] - bvals[z][-2] < 0):
-                    #     im[y][z] = (1 - bvals[y][-1]) * -self.lm[y][z] * bvals[z][-1]
-                    # if (self.lm[y][z] > 0 and bvals[z][-1] - bvals[z][-2] > 0):
-                    #     im[y][z] = (1 - bvals[y][-1]) * self.lm[y][z] * bvals[z][-1]
-                    if (self.lm[y][z] < 0):
+                    if (self.lm[y][z] < 0 and bvals[z][-1] - bvals[z][-2] < 0):
                         im[y][z] = (1 - bvals[y][-1]) * -self.lm[y][z] * bvals[z][-1]
-                    if (self.lm[y][z] > 0):
+                    if (self.lm[y][z] > 0 and bvals[z][-1] - bvals[z][-2] > 0):
                         im[y][z] = (1 - bvals[y][-1]) * self.lm[y][z] * bvals[z][-1]
+                    # if (self.lm[y][z] < 0 and freq_data[z][-1] - freq_data[z][-2] < 0):
+                    #     im[y][z] = (1 - bvals[y][-1]) * -self.lm[y][z] * bvals[z][-1]
+                    # if (self.lm[y][z] > 0 and freq_data[z][-1] - freq_data[z][-2] > 0):
+                    #     im[y][z] = (1 - bvals[y][-1]) * self.lm[y][z] * bvals[z][-1]
         
+        # print("blue -- ep effect: " + str(em[0]) + "  alph effect: " + str(am[0]))
+        # print("red -- ep effect: " + str(em[1]) + "  alph effect: " + str(am[1]))
+        # print("green -- ep effect: " + str(em[2]) + "  alph effect: " + str(am[2]))
+        # print("yellow -- ep effect: " + str(em[3]) + "  alph effect: " + str(am[3]))
+        # print()
+
         new_bvals = []
 
         # For each behavior, calculate the probability of this behavior for this cycle and append it to bvals
@@ -115,8 +125,8 @@ class realTimeGrapher:
             bNext = cur + change
             if bNext > 1:
                 bNext = 1
-            if bNext < -1:
-                bNext = -1
+            if bNext < 0:
+                bNext = 0
             new_bvals.append(bNext)
         
         return new_bvals
@@ -148,8 +158,8 @@ class realTimeGrapher:
             for i in range(4):
                 mean_error += diffs[i]
             mean_error /= 4
-            # self.alph += mean_error / 100
-            self.ep -= mean_error / 100
+            self.alph += mean_error / 50
+            self.ep -= mean_error / 50
             if self.alph < 0:
                 self.alph = 0
             if self.ep < 0:
@@ -213,7 +223,7 @@ class realTimeGrapher:
                         self.lm[i][j] = 1
                     if self.lm[j][i] > 1:
                         self.lm[j][i] = 1
-            print("yellow lambdas: " + str(self.lm[0][3]) + " " + str(self.lm[1][3]) + " " + str(self.lm[2][3]))
+            # print("yellow lambdas: " + str(self.lm[0][3]) + " " + str(self.lm[1][3]) + " " + str(self.lm[2][3]))
 
     def accuracy_graph(self, frame):
         freq_data = self.game.game_mode.freq_data
@@ -330,7 +340,7 @@ class realTimeGrapher:
                 self.line1, self.line2, self.line3, self.line4,
                 self.acc1, self.acc2, self.acc3, self.acc4, self.acc_mean, self.acc_cumul)
     
-    def animate(self):
+    def animate(self, event):
         self.ani = FuncAnimation(self.fig, self.genGraph, frames=itertools.count(), interval=100, blit=True, save_count=MAX_FRAMES)
 
         self.fig.set_figheight(7)

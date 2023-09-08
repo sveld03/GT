@@ -13,6 +13,8 @@ class ModeTemplate:
         self.screen = screen
         self.run = True
 
+        self.button_clicked = False
+
         self.window = self.params.get_window()
         
         # Get access to buttons on screen
@@ -178,7 +180,7 @@ class ModeTemplate:
     # Move right function that sets run = False
     def move_right(self):
         if self.screen.canvas.coords(self.screen.dot)[2] < 1225:
-            self.screen.canvas.move(self.screen.dot, 20, 0)
+            self.screen.canvas.move(self.screen.dot, 40, 0)
             return True
         else:
             self.run = False
@@ -191,21 +193,21 @@ class ModeTemplate:
     # Moves dot left
     def move_left(self):
         if self.screen.canvas.coords(self.screen.dot)[0] > 0:
-            self.screen.canvas.move(self.screen.dot, -20, 0)
+            self.screen.canvas.move(self.screen.dot, -40, 0)
             return True
         return False
 
     # Moves dot up
     def move_up(self):
         if self.screen.canvas.coords(self.screen.dot)[1] > 0:
-            self.screen.canvas.move(self.screen.dot, 0, -20)
+            self.screen.canvas.move(self.screen.dot, 0, -40)
             return True
         return False
 
     # Moves dot down
     def move_down(self):
         if self.screen.canvas.coords(self.screen.dot)[3] < 450:
-            self.screen.canvas.move(self.screen.dot, 0, 20)
+            self.screen.canvas.move(self.screen.dot, 0, 40)
             return True
         return False
 
@@ -213,16 +215,28 @@ class ModeTemplate:
 
     # Move dot right, then record blue button click
     def move_blue(self):
+        if self.button_clicked == False:
+            self.button_clicked = True
+            self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("blue")
 
     # Move dot left, then record red button click
     def move_red(self):
+        if self.button_clicked == False:
+            self.button_clicked = True
+            self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("red")
     
     # Move dot up, then record green button click
     def move_green(self):
+        if self.button_clicked == False:
+            self.button_clicked = True
+            self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("green")
 
     # Move dot down, then record yellow button click
     def move_yellow(self):
+        if self.button_clicked == False:
+            self.button_clicked = True
+            self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("yellow")
