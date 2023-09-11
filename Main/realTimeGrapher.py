@@ -82,7 +82,7 @@ class realTimeGrapher:
         # encapsulates equations 3 (resurgence) and 4 (automatic chaining)
         im = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
-        # self.correct()
+        self.correct()
 
         freq_data = self.game.game_mode.freq_data
         if len(freq_data) < 2:

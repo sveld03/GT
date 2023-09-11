@@ -43,10 +43,12 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         freq_starting_id = freq_list[0][0]
 
-        freq_line1, = self.axs[0].plot(freq_list[1], freq_list[2], 'b', linestyle='solid', label="Behavior 1")
-        freq_line2, = self.axs[0].plot(freq_list[1], freq_list[3], 'r', linestyle='solid', label="Behavior 2")
-        freq_line3, = self.axs[0].plot(freq_list[1], freq_list[4], 'g', linestyle='solid', label="Behavior 3")
-        freq_line4, = self.axs[0].plot(freq_list[1], freq_list[5], 'r', linestyle='solid', label="Behavior 4")
+        print(freq_list[1][:])
+
+        freq_line1, = self.axs[0].plot([row[1] for row in freq_list], [row[2] for row in freq_list], 'b', linestyle='solid', label="Behavior 1")
+        freq_line2, = self.axs[0].plot([row[1] for row in freq_list], [row[3] for row in freq_list], 'r', linestyle='solid', label="Behavior 2")
+        freq_line3, = self.axs[0].plot([row[1] for row in freq_list], [row[4] for row in freq_list], 'g', linestyle='solid', label="Behavior 3")
+        freq_line4, = self.axs[0].plot([row[1] for row in freq_list], [row[5] for row in freq_list], 'y', linestyle='solid', label="Behavior 4")
 
 
         """Probability Graph"""
@@ -68,10 +70,10 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         prob_starting_id = prob_list[0][0]
 
-        prob_line1, = self.axs[1].plot(prob_list[1], prob_list[2], 'b', linestyle='solid')
-        prob_line2, = self.axs[1].plot(prob_list[1], prob_list[3], 'r', linestyle='solid')
-        prob_line1, = self.axs[1].plot(prob_list[1], prob_list[4], 'g', linestyle='solid')
-        prob_line1, = self.axs[1].plot(prob_list[1], prob_list[5], 'r', linestyle='solid')
+        prob_line1, = self.axs[1].plot([row[1] for row in prob_list], [row[2] for row in prob_list], 'b', linestyle='solid')
+        prob_line2, = self.axs[1].plot([row[1] for row in prob_list], [row[3] for row in prob_list], 'r', linestyle='solid')
+        prob_line1, = self.axs[1].plot([row[1] for row in prob_list], [row[4] for row in prob_list], 'g', linestyle='solid')
+        prob_line1, = self.axs[1].plot([row[1] for row in prob_list], [row[5] for row in prob_list], 'y', linestyle='solid')
 
 
         """Parameter Graph"""
@@ -93,20 +95,20 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         param_starting_id = param_list[0][0]
 
-        param_line_ep, = self.axs[2].plot(param_list[1], param_list[2], 'b', linestyle='solid', label="Epsilon")
-        param_line_alph, = self.axs[2].plot(param_list[1], param_list[3], 'r', linestyle='solid', label="Alpha")
-        param_line_l12, = self.axs[2].plot(param_list[1], param_list[4], 'g', linestyle='solid', label="lambda12")
-        param_line_l13, = self.axs[2].plot(param_list[1], param_list[5], 'y', linestyle='solid', label="lambda13")
-        param_line_l14, = self.axs[2].plot(param_list[1], param_list[6], 'b', linestyle='dashed', label="lambda14")
-        param_line_l21, = self.axs[2].plot(param_list[1], param_list[7], 'r', linestyle='dashed', label="lambda21")
-        param_line_l23, = self.axs[2].plot(param_list[1], param_list[8], 'g', linestyle='dashed', label="lambda23")
-        param_line_l24, = self.axs[2].plot(param_list[1], param_list[9], 'y', linestyle='dashed', label="lambda24")
-        param_line_l31, = self.axs[2].plot(param_list[1], param_list[10], 'c', linestyle='solid', label="lambda31")
-        param_line_l32, = self.axs[2].plot(param_list[1], param_list[11], 'm', linestyle='solid', label="lambda32")
-        param_line_l34, = self.axs[2].plot(param_list[1], param_list[12], 'k', linestyle='solid', label="lambda34")
-        param_line_l41, = self.axs[2].plot(param_list[1], param_list[13], 'c', linestyle='dashed', label="lambda41")
-        param_line_l42, = self.axs[2].plot(param_list[1], param_list[14], 'm', linestyle='dashed', label="lambda42")
-        param_line_l43, = self.axs[2].plot(param_list[1], param_list[15], 'k', linestyle='dashed', label="lambda43")
+        param_line_ep, = self.axs[2].plot([row[1] for row in param_list], [row[2] for row in param_list], 'b', linestyle='dotted', label="Epsilon")
+        param_line_alph, = self.axs[2].plot([row[1] for row in param_list], [row[3] for row in param_list], 'r', linestyle='dotted', label="Alpha")
+        param_line_l12, = self.axs[2].plot([row[1] for row in param_list], [row[4] for row in param_list], 'g', linestyle='dotted', label="lambda12")
+        param_line_l13, = self.axs[2].plot([row[1] for row in param_list], [row[5] for row in param_list], 'y', linestyle='dotted', label="lambda13")
+        param_line_l14, = self.axs[2].plot([row[1] for row in param_list], [row[6] for row in param_list], 'b', linestyle='dashed', label="lambda14")
+        param_line_l21, = self.axs[2].plot([row[1] for row in param_list], [row[7] for row in param_list], 'r', linestyle='dashed', label="lambda21")
+        param_line_l23, = self.axs[2].plot([row[1] for row in param_list], [row[8] for row in param_list], 'g', linestyle='dashed', label="lambda23")
+        param_line_l24, = self.axs[2].plot([row[1] for row in param_list], [row[9] for row in param_list], 'y', linestyle='dashed', label="lambda24")
+        param_line_l31, = self.axs[2].plot([row[1] for row in param_list], [row[10] for row in param_list], 'c', linestyle='solid', label="lambda31")
+        param_line_l32, = self.axs[2].plot([row[1] for row in param_list], [row[11] for row in param_list], 'm', linestyle='solid', label="lambda32")
+        param_line_l34, = self.axs[2].plot([row[1] for row in param_list], [row[12] for row in param_list], 'k', linestyle='solid', label="lambda34")
+        param_line_l41, = self.axs[2].plot([row[1] for row in param_list], [row[13] for row in param_list], 'c', linestyle='dashed', label="lambda41")
+        param_line_l42, = self.axs[2].plot([row[1] for row in param_list], [row[14] for row in param_list], 'm', linestyle='dashed', label="lambda42")
+        param_line_l43, = self.axs[2].plot([row[1] for row in param_list], [row[15] for row in param_list], 'k', linestyle='dashed', label="lambda43")
 
         self.fig.legend()
         self.fig.set_figheight(9)
@@ -118,5 +120,5 @@ class Converter:
 
         plt.show()
 
-converter = Converter('Steven8', 'A', 1)
+converter = Converter('Steven11', 'A', 2)
 converter.convert()
