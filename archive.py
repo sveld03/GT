@@ -971,3 +971,86 @@
 #     # Move dot down, then record yellow button click
 #     def move_yellow(self):
 #         self.update_clicks("yellow")
+
+
+""" realTimeGrapher.correct() """
+# prob_values = []
+#             freq_values = []
+#             diffs = []
+
+#             for n in range(4):
+#                 prob_values.append(prob_data[n][-(1 + PREDICTION_TIME * 10)])
+#                 freq_values.append(freq_data[n][-1])
+#                 diffs.append(freq_values[n] - prob_values[n])
+
+#             mean_error = 0
+#             # If undershooting on average, increase alpha and decrease epsilon. If overshooting on average, increase epsilon and decrease alpha
+#             for i in range(4):
+#                 mean_error += diffs[i]
+#             mean_error /= 4
+#             self.alph += mean_error / 50
+#             self.ep -= mean_error / 50
+#             if self.alph < 0:
+#                 self.alph = 0
+#             if self.ep < 0:
+#                 self.ep = 0
+#             if self.alph > 1:
+#                 self.alph = 1
+#             if self.ep > 1:
+#                 self.ep = 1
+            
+#             prob_slopes = []
+#             freq_slopes = []
+#             slope_diffs = []
+
+#             for n in range(4):
+#                 prob_slopes.append((prob_data[n][-(1 + PREDICTION_TIME * 10)] - prob_data[n][-(SLOPERANGE + PREDICTION_TIME * 10)]) / 5)
+#                 freq_slopes.append((freq_data[n][-1] - freq_data[n][-SLOPERANGE]) / 5)
+#                 slope_diffs.append(freq_slopes[n] - prob_slopes[n])
+
+#             # mean_slope_error = 0
+#             # # If undershooting on average, increase alpha and decrease epsilon. If overshooting on average, increase epsilon and decrease alpha
+#             # for i in range(4):
+#             #     mean_slope_error += slope_diffs[i]
+#             # mean_slope_error /= 4
+#             # self.alph += mean_slope_error / 10
+#             # self.ep -= mean_slope_error / 10
+#             # if self.alph < 0:
+#             #     self.alph = 0
+#             # if self.ep < 0:
+#             #     self.ep = 0
+
+#             for i in range(4):
+#                 for j in range(4):
+#                     # Behaviors i and j are rising together; if undershooting, increase lambda. If overshooting, decrease lambda but not below 0
+#                     if i != j and freq_slopes[i] > 0 and freq_slopes[j] > 0:
+#                         neg = False
+#                         if self.lm[i][j] < 0 or self.lm[j][i] < 0:
+#                             neg = True
+
+#                         self.lm[i][j] += slope_diffs[i]
+#                         self.lm[j][i] += slope_diffs[j]
+
+#                         if neg == False:
+#                             if self.lm[i][j] < 0:
+#                                 self.lm[i][j] = 0
+#                             if self.lm[j][i] < 0:
+#                                 self.lm[j][i] = 0
+
+#                     # Behavior i is falling and behavior j is rising, indicating resurgence. If undershooting j, decrease lambda; if overshooting j, increase lambda but not above 0
+#                     if i != j and freq_slopes[i] < 0 and freq_slopes [j] > 0:
+#                         pos = False
+#                         if self.lm[j][i] > 0:
+#                             pos = True
+
+#                         self.lm[j][i] -= slope_diffs[j]
+
+#                         if pos == False:
+#                             if self.lm[j][i] > 0:
+#                                 self.lm[j][i] = 0
+                    
+#                     if self.lm[i][j] > 1:
+#                         self.lm[i][j] = 1
+#                     if self.lm[j][i] > 1:
+#                         self.lm[j][i] = 1
+#             # print("yellow lambdas: " + str(self.lm[0][3]) + " " + str(self.lm[1][3]) + " " + str(self.lm[2][3]))

@@ -15,21 +15,25 @@ class realTimeGrapher:
         self.game = game
         self.game.screen.bind("<<startPrediction>>", self.start)
 
+    @property
+    def freq_data(self):
+        return self.game.game_mode.freq_data
+    
     def start(self, event):
 
         self.Cursor = self.game.Cursor
         self.freqprof = self.game.freqprof
+
+        self.prob_data = [[self.params.b10], [self.params.b20], [self.params.b30], [self.params.b40]]
+        # self.freq_data = self.game.game_mode.freq_data      
+        self.acc_data = [[], [], [], [], [], []]
         
         self.x_data = [0]
-        self.y_data = [[self.params.b10], [self.params.b20], [self.params.b30], [self.params.b40]]
         self.ep = self.params.ep
         self.alph = self.params.alph
         self.points = self.params.points
+        self.beta = self.params.beta
         self.lm = self.params.lm
-
-        # self.real_time_ep = [self.ep]
-        # self.real_time_alph = [self.alph]
-        # self.real_time_lm = [self.lm]
 
         self.fig = self.game.game_mode.fig
         self.ax = self.game.game_mode.axs[1]
@@ -37,8 +41,6 @@ class realTimeGrapher:
         self.line2, = self.ax.plot([], [], 'r', linestyle='solid')
         self.line3, = self.ax.plot([], [], 'g', linestyle='solid')
         self.line4, = self.ax.plot([], [], 'y', linestyle='solid')
-
-        self.acc_data = [[], [], [], [], [], []]
 
         self.acc_ax = self.game.game_mode.axs[0]
         self.acc1, = self.acc_ax.plot([], [], 'b', linestyle='dashed')
@@ -60,17 +62,21 @@ class realTimeGrapher:
             data = self.generate_one_cycle(-1)
             self.x_data.append(num * .1)
             for num in range(4):
-                self.y_data[num].append(data[num])
+                self.prob_data[num].append(data[num])
 
         self.game.game_mode.screen.bind("<<buttonClicked>>", self.animate)
 
+
+    """ Prediction Generation"""
     def generate_one_cycle(self, frame):
 
-        length = len(self.y_data[0])
+        self.correct()
+        
+        length = len(self.prob_data[0])
         if length == 1:
-            bvals = [[self.y_data[0][0]], [self.y_data[1][0]], [self.y_data[2][0]], [self.y_data[3][0]]]
+            bvals = [[self.prob_data[0][0]], [self.prob_data[1][0]], [self.prob_data[2][0]], [self.prob_data[3][0]]]
         else:
-            bvals = [[self.y_data[0][-2], self.y_data[0][-1]], [self.y_data[1][-2], self.y_data[1][-1]], [self.y_data[2][-2], self.y_data[2][-1]], [self.y_data[3][-2], self.y_data[3][-1]]]
+            bvals = [[self.prob_data[0][-2], self.prob_data[0][-1]], [self.prob_data[1][-2], self.prob_data[1][-1]], [self.prob_data[2][-2], self.prob_data[2][-1]], [self.prob_data[3][-2], self.prob_data[3][-1]]]
 
         # extinction matrix (quantity of decrease by extinction for each behavior)
         em = []
@@ -78,162 +84,262 @@ class realTimeGrapher:
         # reinforcement matrix (quantity of increase by reinforcement for each behavior)
         am = []
 
+        # Dominance matrix (quantity of increase by dominance for each behavior)
+        bm = [0, 0, 0, 0]
+
         # interaction matrix (the interaction effects between each pair of self.behaviors, before summation)
         # encapsulates equations 3 (resurgence) and 4 (automatic chaining)
         im = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
-        self.correct()
-
         freq_data = self.game.game_mode.freq_data
         if len(freq_data) < 2:
             freq_data = [0, 0]
+
+        Rule_Change = False
         
         # populate matrices with values for this cycle
         for y in range(4):
-            em.append(-bvals[y][-1] * self.ep)
-            am.append((1 - bvals[y][-1]) * self.alph)
-            for z in range(4):
-                if (y != z and len(bvals[z]) >= 2 and self.lm[y][z] >= -1 and self.lm[y][z] <= 1):
-                    if (self.lm[y][z] < 0 and bvals[z][-1] - bvals[z][-2] < 0):
-                        im[y][z] = (1 - bvals[y][-1]) * -self.lm[y][z] * bvals[z][-1]
-                    if (self.lm[y][z] > 0 and bvals[z][-1] - bvals[z][-2] > 0):
-                        im[y][z] = (1 - bvals[y][-1]) * self.lm[y][z] * bvals[z][-1]
-                    # if (self.lm[y][z] < 0 and freq_data[z][-1] - freq_data[z][-2] < 0):
-                    #     im[y][z] = (1 - bvals[y][-1]) * -self.lm[y][z] * bvals[z][-1]
-                    # if (self.lm[y][z] > 0 and freq_data[z][-1] - freq_data[z][-2] > 0):
-                    #     im[y][z] = (1 - bvals[y][-1]) * self.lm[y][z] * bvals[z][-1]
-        
-        # print("blue -- ep effect: " + str(em[0]) + "  alph effect: " + str(am[0]))
-        # print("red -- ep effect: " + str(em[1]) + "  alph effect: " + str(am[1]))
-        # print("green -- ep effect: " + str(em[2]) + "  alph effect: " + str(am[2]))
-        # print("yellow -- ep effect: " + str(em[3]) + "  alph effect: " + str(am[3]))
-        # print()
+            em.append(self.calc_ext_change(bvals[y][-1]))
+            am.append(self.calc_reinf_change(bvals[y][-1]))
+            
+            if len(freq_data[0]) >= SLOPERANGE:
+                for z in range(4):
+                    if (y != z):
+                        im[y][z] += (self.calc_resurg_delay(y, z) + self.calc_auto_delay(y, z)
+                                     + self.calc_replace_delay(y, z) + self.calc_dissol_delay(y, z))
 
-        new_bvals = []
+                        if Rule_Change:
+                            im[y][z] += (self.calc_resurg_immed(y, z) + self.calc_auto_immed(y, z)
+                                         + self.calc_replace_immed(y, z) + self.calc_dissol_immed(y, z))
+                            
+                bm[y] = self.calc_domin(y, bvals[y][-1])
+
+        new_predictions = []
 
         # For each behavior, calculate the probability of this behavior for this cycle and append it to bvals
         # corrections = self.correct()
         for y in range(4):
             epEffect = em[y]
             alphEffect = am[y]
+            dominanceEffect = bm[y]
             intEffect = 0
             for z in range(4):
                 intEffect += im[y][z]
             cur = bvals[y][-1]
 
-            change = epEffect + alphEffect + intEffect
+            change = epEffect + alphEffect + dominanceEffect + intEffect
             bNext = cur + change
             if bNext > 1:
                 bNext = 1
             if bNext < 0:
                 bNext = 0
-            new_bvals.append(bNext)
+            new_predictions.append(bNext)
         
-        return new_bvals
+        return new_predictions
 
-    """ Functionality and mechanics of the correct function:
-            1. Changes the alpha, epsilon, and lambdas
-            2. Over the course of the trial, perhaps we would hope to see fewer changes as its previously-generated values are more honed for accurate predictions. Maybe we can measure the amount of change in parameters over time
-            3. CHECK: Increases a given lambda when it sees two behaviors rising together
-            4. CHECK: Decreases a given lambda when it sees a rise in one behavior causing a fall in another
-            5. CHECK: Increases alpha when the frequency profile is rising faster than the probability profile overall
-            6. CHECK: Decreases alpha when the frequency profile is rising slower than the probability profile overall
-            7. CHECK: Increases epsilon when the frequency profile is falling faster than the probability profile overall
-            8. CHECK: Decreases epsilon when the frequency profile is falling slower than the probability profile overall"""
     def correct(self):
         freq_data = self.game.game_mode.freq_data
-        prob_data = self.y_data
-        if len(freq_data[0]) >= 1 + PREDICTION_TIME * 10:
-            prob_values = []
-            freq_values = []
-            diffs = []
+        if len(freq_data[0]) >= SLOPERANGE:
+            self.change_ext()
+            self.change_reinf()
 
-            for n in range(4):
-                prob_values.append(prob_data[n][-(1 + PREDICTION_TIME * 10)])
-                freq_values.append(freq_data[n][-1])
-                diffs.append(freq_values[n] - prob_values[n])
+            for y in range(4):
+                for z in range(4):
+                    self.change_resurg(y, z)
+                    self.change_auto(y, z)
+                self.change_domin(y)
 
-            mean_error = 0
-            # If undershooting on average, increase alpha and decrease epsilon. If overshooting on average, increase epsilon and decrease alpha
-            for i in range(4):
-                mean_error += diffs[i]
-            mean_error /= 4
-            self.alph += mean_error / 50
-            self.ep -= mean_error / 50
-            if self.alph < 0:
-                self.alph = 0
-            if self.ep < 0:
-                self.ep = 0
-            if self.alph > 1:
-                self.alph = 1
-            if self.ep > 1:
-                self.ep = 1
+        if self.ep < 0:
+            self.ep = 0
+        if self.ep > 1:
+            self.ep = 1
+        if self.alph < 0:
+            self.alph = 0
+        if self.alph > 1:
+            self.alph = 1
+        if self.beta < 0:
+            self.beta = 0
+        if self.beta > 1:
+            self.beta = 1
+        
+        for y in range(4):
+            for z in range(4):
+                if self.lm[y][z] < -1:
+                    self.lm[y][z] = -1
+                if self.lm[y][z] > 1:
+                    self.lm[y][z] = 1
+
+   
+    """ PARAMETER APPLICATION EQUATIONS"""
+    def calc_ext_change(self, cur):
+        return -self.ep*cur
+        #return -self.ep/HYPER_EP_APP
+    
+    def calc_reinf_change(self, cur):
+        return -self.alph*(1 - cur)
+        #return self.alph/HYPER_ALPH_APP
+    
+    def calc_resurg_delay(self, y, y_prime):
+        if self.lm[y][y_prime] < 0 and self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE] < 0:
+            return self.lm[y][y_prime] * (self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE])
+        return 0
+    
+    def calc_resurg_immed(self, y, y_prime):
+        if self.lm[y][y_prime] < 0 and self.prob_data[y_prime][-1] - self.prob_data[y_prime][-SLOPERANGE] < 0:
+            return self.lm[y][y_prime] * (self.prob_data[y_prime][-1] - self.prob_data[y_prime][-SLOPERANGE])
+        return 0
+        
+    def calc_auto_delay(self, y, y_prime):
+        if self.lm[y][y_prime] > 0 and self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE] > 0:
+            return (1 - self.prob_data[y][-1]) * self.lm[y][y_prime] * self.prob_data[y_prime][-1]
+        return 0
+    
+    def calc_auto_immed(self, y, y_prime):
+        if self.lm[y][y_prime] > 0 and self.prob_data[y_prime][-1] - self.prob_data[y_prime][-SLOPERANGE] > 0:
+            return (1 - self.prob_data[y][-1]) * self.lm[y][y_prime] * self.prob_data[y_prime][-1]
+        
+    def calc_replace_delay(self, y, y_prime):
+        # TO DO: add phi matrix
+        return 0
+
+    def calc_replace_immed(self, y, y_prime):
+        # TO DO: add phi matrix
+        return 0
+
+    def calc_dissol_delay(self, y, y_prime):
+        # TO DO: add phi matrix
+        return 0
+
+    def calc_dissol_immed(self, y, y_prime):
+        # TO DO: add phi matrix
+        return 0
+
+    def calc_domin(self, y, cur):
+        dominanceCounter = 0
+        dominanceDenominator = self.beta
+
+        if len(self.freq_data[0]) >= SLOPERANGE:
+            freq_slope_y = self.freq_data[y][-1] - self.freq_data[y][-SLOPERANGE]
             
-            prob_slopes = []
-            freq_slopes = []
-            slope_diffs = []
+            for z in range(4):
+                if y != z:
+                    freq_slope_z = self.freq_data[z][-1] - self.freq_data[z][-SLOPERANGE]
+                    dominanceDenominator += self.freq_data[z][-1]
 
-            for n in range(4):
-                prob_slopes.append((prob_data[n][-(1 + PREDICTION_TIME * 10)] - prob_data[n][-(6 + PREDICTION_TIME * 10)]) / 5)
-                freq_slopes.append((freq_data[n][-1] - freq_data[n][-6]) / 5)
-                slope_diffs.append(freq_slopes[n] - prob_slopes[n])
-
-            # mean_slope_error = 0
-            # # If undershooting on average, increase alpha and decrease epsilon. If overshooting on average, increase epsilon and decrease alpha
-            # for i in range(4):
-            #     mean_slope_error += slope_diffs[i]
-            # mean_slope_error /= 4
-            # self.alph += mean_slope_error / 10
-            # self.ep -= mean_slope_error / 10
-            # if self.alph < 0:
-            #     self.alph = 0
-            # if self.ep < 0:
-            #     self.ep = 0
-
-            for i in range(4):
-                for j in range(4):
-                    # Behaviors i and j are rising together; if undershooting, increase lambda. If overshooting, decrease lambda but not below 0
-                    if i != j and freq_slopes[i] > 0 and freq_slopes[j] > 0:
-                        neg = False
-                        if self.lm[i][j] < 0 or self.lm[j][i] < 0:
-                            neg = True
-
-                        self.lm[i][j] += slope_diffs[i]
-                        self.lm[j][i] += slope_diffs[j]
-
-                        if neg == False:
-                            if self.lm[i][j] < 0:
-                                self.lm[i][j] = 0
-                            if self.lm[j][i] < 0:
-                                self.lm[j][i] = 0
-
-                    # Behavior i is falling and behavior j is rising, indicating resurgence. If undershooting j, decrease lambda; if overshooting j, increase lambda but not above 0
-                    if i != j and freq_slopes[i] < 0 and freq_slopes [j] > 0:
-                        pos = False
-                        if self.lm[j][i] > 0:
-                            pos = True
-
-                        self.lm[j][i] -= slope_diffs[j]
-
-                        if pos == False:
-                            if self.lm[j][i] > 0:
-                                self.lm[j][i] = 0
+                    if self.freq_data[y][-1] > self.freq_data[z][-1] or freq_slope_y > freq_slope_z:
+                        dominanceCounter += 1
                     
-                    if self.lm[i][j] > 1:
-                        self.lm[i][j] = 1
-                    if self.lm[j][i] > 1:
-                        self.lm[j][i] = 1
-            # print("yellow lambdas: " + str(self.lm[0][3]) + " " + str(self.lm[1][3]) + " " + str(self.lm[2][3]))
+            if dominanceCounter == 3 and freq_slope_y >= 0 and dominanceDenominator != 0:
+                return (1 - cur) * self.beta/(HYPER_BETA_APP*dominanceDenominator)
+            return 0
+        
+        else:
+            for z in range(4):
+                if y != z:
+                    dominanceDenominator += self.prob_data[z][-1]
+                    if self.prob_data[y][-1] > self.prob_data[z][-1]:
+                        dominanceCounter += 1
+            if dominanceCounter == 3 and dominanceDenominator != 0:
+                return (1 - cur) * self.beta/(HYPER_BETA_APP*dominanceDenominator)
+            return 0
 
+    
+    """ PARAMETER UPDATE EQUATIONS """
+    def change_ext(self):
+        low_freq_val = False
+        overshoot_count = 0
+        deltas = []
+        for n in range(4):
+            if self.freq_data[n][-1] < self.prob_data[n][-1]:
+                low_freq_val = True
+
+            freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
+            prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
+            if prob_slope >= freq_slope:
+                overshoot_count += 1
+            deltas.append(freq_slope - prob_slope)
+
+        ep_change = 0
+        alph_change = 0
+        if low_freq_val == True and overshoot_count == 4:
+            for n in range(4):
+                ep_change -= deltas[n]
+                alph_change += deltas[n]
+            ep_change /= HYPER_EP_CHANGE
+            alph_change /= HYPER_ALPH_CHANGE
+
+        self.ep += ep_change
+        self.alph += alph_change
+
+    def change_reinf(self):
+        high_freq_count = 0
+        sum_slope_diffs = 0
+        deltas = []
+        for n in range(4):
+            if self.freq_data[n][-1] < self.prob_data[n][-1]:
+                high_freq_count += 1
+
+            freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
+            prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
+            sum_slope_diffs += freq_slope - prob_slope
+            deltas.append(freq_slope - prob_slope)
+
+        alph_change = 0
+        ep_change = 0
+        if high_freq_count == 4 and sum_slope_diffs > 0:
+            alph_change = sum_slope_diffs/HYPER_ALPH_CHANGE
+            ep_change = -sum_slope_diffs/HYPER_EP_CHANGE
+
+        self.ep += ep_change
+        self.alph += alph_change
+    
+    def change_resurg(self, y, y_prime):
+        freq_slope_y = self.freq_data[y][-1] - self.freq_data[y][-SLOPERANGE]
+        freq_slope_y_prime = self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE]
+
+        prob_slope_y = self.prob_data[y][-1 - PREDICTION_TIME] - self.prob_data[y][-SLOPERANGE - PREDICTION_TIME]
+
+        if freq_slope_y > 0 and freq_slope_y_prime < 0:
+            self.lm[y][y_prime] -= (freq_slope_y - prob_slope_y) / HYPER_RESURG_CHANGE
+
+    def change_auto(self, y, y_prime):
+        freq_slope_y = self.freq_data[y][-1] - self.freq_data[y][-SLOPERANGE]
+        freq_slope_y_prime = self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE]
+
+        prob_slope_y = self.prob_data[y][-1 - PREDICTION_TIME] - self.prob_data[y][-SLOPERANGE - PREDICTION_TIME]
+        prob_slope_y_prime = self.prob_data[y_prime][-1 - PREDICTION_TIME] - self.prob_data[y_prime][-SLOPERANGE - PREDICTION_TIME]
+
+        if freq_slope_y > 0 and freq_slope_y_prime > 0:
+            self.lm[y][y_prime] += (freq_slope_y - prob_slope_y) / HYPER_AUTO_CHANGE
+            self.lm[y_prime][y] += (freq_slope_y_prime - prob_slope_y_prime) / HYPER_AUTO_CHANGE
+
+    def change_domin(self, y):
+        freq_slope_y = self.freq_data[y][-1] - self.freq_data[y][-SLOPERANGE]
+        prob_slope_y = self.prob_data[y][-1 - PREDICTION_TIME] - self.prob_data[y][-SLOPERANGE - PREDICTION_TIME]
+        
+        dominanceCounter = 0
+        
+        for z in range(4):
+            if y != z:
+
+                if self.freq_data[y][-1] > self.freq_data[z][-1]:
+                    dominanceCounter += 1
+                
+        if dominanceCounter == 3 and freq_slope_y >= 0:
+            # self.beta += (freq_slope_y - prob_slope_y) / HYPER_BETA_CHANGE
+            self.beta += 0
+
+    
+    """ Graph Generation """
     def accuracy_graph(self, frame):
-        freq_data = self.game.game_mode.freq_data
+        freq_data = self.freq_data
         if len(freq_data[0]) >= 1:
             if len(freq_data[0]) >= 1 + PREDICTION_TIME * 10:
                 mean = 0
                 for n in range(4):
                     null_hyp = freq_data[n][-(1 + PREDICTION_TIME * 10)]
                     null_error = abs(null_hyp - freq_data[n][-1])
-                    prob_error = abs(self.y_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
+                    prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
                     acc = null_error - prob_error
                     self.acc_data[n].append(acc)
                     mean += acc
@@ -244,7 +350,7 @@ class realTimeGrapher:
                 for n in range(4):
                     null_hyp = freq_data[n][0]
                     null_error = abs(null_hyp - freq_data[n][-1])
-                    prob_error = abs(self.y_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
+                    prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
                     acc = null_error - prob_error
                     self.acc_data[n].append(acc)
                     mean += acc
@@ -278,26 +384,6 @@ class realTimeGrapher:
                 self.acc_mean.set_data(x_data[-100:], self.acc_data[4][-100:])
                 self.acc_cumul.set_data(x_data[-100:], self.acc_data[5][-100:])
     
-    def record(self):
-        freq = self.game.game_mode.freq_data
-        mode = self.game.game_mode.mode_char
-        name = self.game.game_mode.player_name
-        time = self.game.game_mode.timer.time_elapsed()
-        trial = self.game.game_mode.trial_number
-
-        self.Cursor.execute('INSERT INTO Frequencies(B1, B2, B3, B4, mode, name, time, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-                            (freq[0][-1], freq[1][-1], freq[2][-1], freq[3][-1], mode, name, time, trial))
-        self.Cursor.execute('INSERT INTO Probabilities(B1, B2, B3, B4, mode, name, time, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-                            (self.y_data[0][-(1 + PREDICTION_TIME * 10)], self.y_data[1][-(1 + PREDICTION_TIME * 10)], self.y_data[2][-(1 + PREDICTION_TIME * 10)], self.y_data[3][-(1 + PREDICTION_TIME * 10)], 
-                             mode, name, time, trial))
-        self.Cursor.execute('INSERT INTO Accuracies(B1, B2, B3, B4, mean, cumulative, mode, name, time, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                            (self.acc_data[0][-1], self.acc_data[1][-1], self.acc_data[2][-1], self.acc_data[3][-1], self.acc_data[4][-1], self.acc_data[5][-1], 
-                            mode, name, time, trial))
-        self.Cursor.execute('INSERT INTO Parameters(epsilon, alpha, l12, l13, l14, l21, l23, l24, l31, l32, l34, l41, l42, l43, time, mode, name, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                            (self.ep, self.alph, self.lm[0][1], self.lm[0][2], self.lm[0][3], self.lm[1][0], self.lm[1][2], self.lm[1][3],
-                            self.lm[2][0], self.lm[2][1], self.lm[2][3], self.lm[3][0], self.lm[3][1], self.lm[3][2], 
-                            time, mode, name, trial))
-    
     def genGraph(self, frame):
 
         # Generate a list of behavioral probabilities over time
@@ -307,26 +393,26 @@ class realTimeGrapher:
         self.x_data.append((frame * .1) + PREDICTION_TIME)
         for num in range(4):
             # bval_smooth = b_values[num]
-            # if len(self.y_data[num]) >= 40:
+            # if len(self.prob_data[num]) >= 40:
             #     for m in range(1, 40):
-            #         bval_smooth += self.y_data[num][-m]
+            #         bval_smooth += self.prob_data[num][-m]
             #     bval_smooth /= 40
-            self.y_data[num].append(b_values[num])
+            self.prob_data[num].append(b_values[num])
 
         window_start = 0
         if frame <= 100:
-            self.line1.set_data(self.x_data, self.y_data[0])
-            self.line2.set_data(self.x_data, self.y_data[1])
-            self.line3.set_data(self.x_data, self.y_data[2])
-            self.line4.set_data(self.x_data, self.y_data[3])
+            self.line1.set_data(self.x_data, self.prob_data[0])
+            self.line2.set_data(self.x_data, self.prob_data[1])
+            self.line3.set_data(self.x_data, self.prob_data[2])
+            self.line4.set_data(self.x_data, self.prob_data[3])
 
         if frame > 100:
             window_start = frame/10 - 10
 
-            self.line1.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.y_data[0][-100 - 10 * PREDICTION_TIME:])
-            self.line2.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.y_data[1][-100 - 10 * PREDICTION_TIME:])
-            self.line3.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.y_data[2][-100 - 10 * PREDICTION_TIME:])
-            self.line4.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.y_data[3][-100 - 10 * PREDICTION_TIME:])
+            self.line1.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.prob_data[0][-100 - 10 * PREDICTION_TIME:])
+            self.line2.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.prob_data[1][-100 - 10 * PREDICTION_TIME:])
+            self.line3.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.prob_data[2][-100 - 10 * PREDICTION_TIME:])
+            self.line4.set_data(self.x_data[-100 - 10 * PREDICTION_TIME:], self.prob_data[3][-100 - 10 * PREDICTION_TIME:])
 
         self.ax.set_xlim(window_start, window_start + 10 + PREDICTION_TIME)
 
@@ -355,6 +441,30 @@ class realTimeGrapher:
         self.acc_ax.set_ylabel('Accuracy')
 
         plt.show()
+
+    
+    """ Other Functions """
+    def record(self):
+        freq = self.game.game_mode.freq_data
+        mode = self.game.game_mode.mode_char
+        name = self.game.game_mode.player_name
+        time = self.game.game_mode.timer.time_elapsed()
+        trial = self.game.game_mode.trial_number
+
+        self.Cursor.execute('INSERT INTO Frequencies(B1, B2, B3, B4, mode, name, time, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+                            (freq[0][-1], freq[1][-1], freq[2][-1], freq[3][-1], mode, name, time, trial))
+        self.Cursor.execute('INSERT INTO Probabilities(B1, B2, B3, B4, mode, name, time, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+                            (self.prob_data[0][-(1 + PREDICTION_TIME * 10)], self.prob_data[1][-(1 + PREDICTION_TIME * 10)], self.prob_data[2][-(1 + PREDICTION_TIME * 10)], self.prob_data[3][-(1 + PREDICTION_TIME * 10)], 
+                             mode, name, time, trial))
+        self.Cursor.execute('INSERT INTO Accuracies(B1, B2, B3, B4, mean, cumulative, mode, name, time, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                            (self.acc_data[0][-1], self.acc_data[1][-1], self.acc_data[2][-1], self.acc_data[3][-1], self.acc_data[4][-1], self.acc_data[5][-1], 
+                            mode, name, time, trial))
+        self.Cursor.execute('INSERT INTO upParameters(alpha, beta, l12, l13, l14, l21, l23, l24, l31, l32, l34, l41, l42, l43, time, mode, name, trial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+                            (self.alph, self.beta, self.lm[0][1], self.lm[0][2], self.lm[0][3], self.lm[1][0], self.lm[1][2], self.lm[1][3],
+                            self.lm[2][0], self.lm[2][1], self.lm[2][3], self.lm[3][0], self.lm[3][1], self.lm[3][2], 
+                            time, mode, name, trial))
+        self.Cursor.execute('INSERT INTO downParameters(epsilon, time, mode, name, trial) VALUES (?, ?, ?, ?, ?)',
+                            (self.ep, time, mode, name, trial))
 
     def stop(self, event):
         self.ani.event_source.stop()

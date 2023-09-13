@@ -38,13 +38,15 @@ class Game:
         self.freqprof = sqlite3.connect('freqprof.db')
         self.Cursor = self.freqprof.cursor()
 
-        # self.Cursor.execute('CREATE TABLE Frequencies (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
-        # self.Cursor.execute('CREATE TABLE Probabilities (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
-        # self.Cursor.execute('CREATE TABLE Accuracies (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 REAL, B2 REAL, B3 REAL, B4 REAL, mean REAL, cumulative REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
-        # self.Cursor.execute('CREATE TABLE Parameters (id INTEGER PRIMARY KEY AUTOINCREMENT, epsilon REAL, alpha REAL, l12 REAL, l13 REAL, l14 REAL, l21 REAL, l23 REAL, l24 REAL, l31 REAL, l32 REAL, l34 REAL, l41 REAL, l42 REAL, l43 REAL, time REAL, mode TEXT, name TEXT, trial TEXT)')
-        # self.Cursor.execute('DROP TABLE IF EXISTS Accuracy')
+        # self.Cursor.execute('CREATE TABLE Frequencies (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, mode TEXT, trial TEXT, time REAL, B1 REAL, B2 REAL, B3 REAL, B4 REAL)')
+        # self.Cursor.execute('CREATE TABLE Probabilities (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, mode TEXT, trial TEXT, time REAL, B1 REAL, B2 REAL, B3 REAL, B4 REAL)')
+        # self.Cursor.execute('CREATE TABLE Accuracies (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, mode TEXT, trial TEXT, time REAL, B1 REAL, B2 REAL, B3 REAL, B4 REAL, mean REAL, cumulative REAL)')
+        # self.Cursor.execute('CREATE TABLE upParameters (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, mode TEXT, trial TEXT, time REAL, alpha REAL, beta REAL, l12 REAL, l13 REAL, l14 REAL, l21 REAL, l23 REAL, l24 REAL, l31 REAL, l32 REAL, l34 REAL, l41 REAL, l42 REAL, l43 REAL)')
+        # self.Cursor.execute('CREATE TABLE downParameters (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, mode TEXT, trial TEXT, time REAL, epsilon REAL, p12 REAL, p13 REAL, p14 REAL, p21 REAL, p23 REAL, p24 REAL, p31 REAL, p32 REAL, p34 REAL, p41 REAL, p42 REAL, p43 REAL)')
+        # self.Cursor.execute('DROP TABLE IF EXISTS Accuracies')
         # self.Cursor.execute('DROP TABLE IF EXISTS Frequencies')
         # self.Cursor.execute('DROP TABLE IF EXISTS Probabilities')
+        # self.Cursor.execute('DROP TABLE IF EXISTS Parameters')
 
         # self.freqprof.commit()
 
@@ -102,7 +104,7 @@ class Game:
         self.screen.event_generate("<<startPrediction>>")
         # self.game_mode.start()
 
-    # Mode C: meant to produce the first two curves of the Default Probability Profile (DPP)
+    # Mode D: meant to produce the first two curves of the Default Probability Profile (DPP)
     def modeD(self):
         self.screen.reset()
         self.screen.congrats.place_forget()
@@ -111,6 +113,9 @@ class Game:
         self.screen.mode_char = 'D'
         self.game_mode = ModeD(self.freqprof, self.Cursor, self.screen, timer, self.params)
         self.screen.event_generate("<<startPrediction>>")
+
+    def modeE(self):
+        pass
 
     # Mode 1: simplest probabilistic game
     def mode1(self):
@@ -123,7 +128,7 @@ class Game:
         self.screen.event_generate("<<startPrediction>>")
         # self.game_mode.start()
 
-    # Mode C: probability swap between two buttons
+    # Mode 2: probability swap between two buttons
     def mode2(self):
         self.screen.reset()
         self.screen.congrats.place_forget()

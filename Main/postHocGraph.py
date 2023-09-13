@@ -1,5 +1,3 @@
-"""convert.py"""
-
 import sqlite3
 
 # Read from and write to csv files
@@ -78,9 +76,13 @@ class Converter:
 
         """Parameter Graph"""
         # Select data from database that has the desired user name, game mode, and trial number
-        self.Cursor.execute('SELECT id, time, epsilon, alpha, l12, l13, l14, l21, l23, l24, l31, l32, l34, l41, l42, l43 FROM Parameters WHERE name = ? AND mode = ? AND trial = ?', 
+        self.Cursor.execute('SELECT id, time, beta, alpha, l12, l13, l14, l21, l23, l24, l31, l32, l34, l41, l42, l43 FROM upParameters WHERE name = ? AND mode = ? AND trial = ?', 
                     (self.name, self.mode, self.trial))
         param_subset = self.Cursor.fetchall()
+
+        self.Cursor.execute('SELECT id, time, epsilon from downParameters WHERE name = ? AND mode = ? AND trial = ?',
+                            (self.name, self.mode, self.trial))
+        epsilon_subset = self.Cursor.fetchall()
 
         # Print error message to terminal if sample is not continuous
         for n in range(len(param_subset) - 1):
@@ -91,11 +93,15 @@ class Converter:
         param_list = []
         for row in param_subset:
             param_list.append(list(row))
+        
+        epsilon_list = []
+        for row in epsilon_subset:
+            epsilon_list.append(list(row))
 
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         param_starting_id = param_list[0][0]
 
-        param_line_ep, = self.axs[2].plot([row[1] for row in param_list], [row[2] for row in param_list], 'b', linestyle='dotted', label="Epsilon")
+        param_line_beta, = self.axs[2].plot([row[1] for row in param_list], [row[2] for row in param_list], 'b', linestyle='dotted', label="Beta")
         param_line_alph, = self.axs[2].plot([row[1] for row in param_list], [row[3] for row in param_list], 'r', linestyle='dotted', label="Alpha")
         param_line_l12, = self.axs[2].plot([row[1] for row in param_list], [row[4] for row in param_list], 'g', linestyle='dotted', label="lambda12")
         param_line_l13, = self.axs[2].plot([row[1] for row in param_list], [row[5] for row in param_list], 'y', linestyle='dotted', label="lambda13")
@@ -109,6 +115,8 @@ class Converter:
         param_line_l41, = self.axs[2].plot([row[1] for row in param_list], [row[13] for row in param_list], 'c', linestyle='dashed', label="lambda41")
         param_line_l42, = self.axs[2].plot([row[1] for row in param_list], [row[14] for row in param_list], 'm', linestyle='dashed', label="lambda42")
         param_line_l43, = self.axs[2].plot([row[1] for row in param_list], [row[15] for row in param_list], 'k', linestyle='dashed', label="lambda43")
+        param_line_ep, = self.axs[2].plot([row[1] for row in epsilon_list], [row[2] for row in epsilon_list], 'c', linestyle='dotted', label="Epsilon")
+
 
         self.fig.legend()
         self.fig.set_figheight(9)
@@ -120,5 +128,5 @@ class Converter:
 
         plt.show()
 
-converter = Converter('Steven11', 'A', 2)
+converter = Converter('Jonathan', '2', 1)
 converter.convert()

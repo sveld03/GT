@@ -217,6 +217,7 @@ class ModeTemplate:
     def move_blue(self):
         if self.button_clicked == False:
             self.button_clicked = True
+            self.timer.start_time = time()
             self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("blue")
 
@@ -224,6 +225,7 @@ class ModeTemplate:
     def move_red(self):
         if self.button_clicked == False:
             self.button_clicked = True
+            self.timer.start_time = time()
             self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("red")
     
@@ -231,6 +233,7 @@ class ModeTemplate:
     def move_green(self):
         if self.button_clicked == False:
             self.button_clicked = True
+            self.timer.start_time = time()
             self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("green")
 
@@ -238,5 +241,6 @@ class ModeTemplate:
     def move_yellow(self):
         if self.button_clicked == False:
             self.button_clicked = True
+            self.timer.start_time = time()
             self.screen.event_generate("<<buttonClicked>>")
         self.update_clicks("yellow")

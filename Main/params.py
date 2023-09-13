@@ -82,18 +82,18 @@ class Params(Tk):
         alphLbl.grid(column = 0, row = 2)
         self.alphNtr = Entry(self, width=10)
         self.alphNtr.grid(column=1, row=2)
-        self.alphNtr.insert(0, '.01')
+        self.alphNtr.insert(0, '0')
 
         self.deltANtr = Entry(self, width=10)
         self.deltANtr.grid(column = 2, row = 2)
         self.deltANtr.insert(0, '.05')
 
-        # reinforcer
-        rfLbl = Label(self, text = "Reinforcer: ")
-        rfLbl.grid(column = 0, row = 3)
-        self.rfNtr = Entry(self, width=10)
-        self.rfNtr.grid(column=1, row=3)
-        self.rfNtr.insert(0, '0')
+        # dominance
+        betaLbl = Label(self, text = "Beta: ")
+        betaLbl.grid(column = 0, row = 3)
+        self.betaNtr = Entry(self, width=10)
+        self.betaNtr.grid(column=1, row=3)
+        self.betaNtr.insert(0, '.01')
 
         self.deltRNtr = Entry(self, width=10)
         self.deltRNtr.grid(column = 2, row = 3)
@@ -169,7 +169,7 @@ class Params(Tk):
         self.windowNtr.insert(0, '3')
 
         # submit button
-        submit = Button(self, text = "Generate Graph", fg = "red", command=self.store_params)
+        submit = Button(self, text = "Start Game", fg = "red", command=self.store_params)
 
         # set Button grid
         submit.grid(column=5, row=13)
@@ -246,6 +246,7 @@ class Params(Tk):
         self.points = int(self.dataNtr.get())
         self.ep = float(self.epNtr.get())
         self.alph = float(self.alphNtr.get())
+        self.beta = float(self.betaNtr.get())
 
         self.event_generate("<<startGame>>")
         self.event_generate("<<startGraph>>")
