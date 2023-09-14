@@ -35,6 +35,9 @@ class realTimeGrapher:
         self.beta = self.params.beta
         self.lm = self.params.lm
 
+        self.drop_counters = [0, 0, 0, 0]
+        self.rise_counters = [0, 0, 0, 0]
+
         self.fig = self.game.game_mode.fig
         self.ax = self.game.game_mode.axs[1]
         self.line1, = self.ax.plot([], [], 'b', linestyle='solid')
@@ -55,6 +58,11 @@ class realTimeGrapher:
         self.ax.set_xticks([0, 2, 4, 6, 8, 10, 12, 14, 16], labels=["-10", "-8", "-6", "-4", "-2", "0", "+2", "+4", "+6"])
 
         self.acc_ax.set_ylim(-1, 1)
+
+        self.game.game_mode.screen.bind("<<blueDrop>>", self.blue_drop)
+        self.game.game_mode.screen.bind("<<redDrop>>", self.red_drop)
+        self.game.game_mode.screen.bind("<<greenDrop>>", self.green_drop)
+        self.game.game_mode.screen.bind("<<yellowDrop>>", self.yellow_drop)
 
         self.game.game_mode.screen.bind("<<stopGraph>>", self.stop)
 
@@ -91,28 +99,32 @@ class realTimeGrapher:
         # encapsulates equations 3 (resurgence) and 4 (automatic chaining)
         im = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
-        freq_data = self.game.game_mode.freq_data
-        if len(freq_data) < 2:
-            freq_data = [0, 0]
-
-        Rule_Change = False
+        # Rule_Change = False
         
         # populate matrices with values for this cycle
         for y in range(4):
-            em.append(self.calc_ext_change(bvals[y][-1]))
-            am.append(self.calc_reinf_change(bvals[y][-1]))
+            epEffect = self.calc_ext_change(bvals[y][-1])
+            alphEffect = self.calc_reinf_change(bvals[y][-1])
+
+            em.append(epEffect)
+            am.append(alphEffect)
+            bm[y] = self.calc_domin(y, bvals[y][-1], epEffect)
+
+            intEffect = 0
             
-            if len(freq_data[0]) >= SLOPERANGE:
+            if len(self.freq_data[0]) >= SLOPERANGE:
                 for z in range(4):
                     if (y != z):
-                        im[y][z] += (self.calc_resurg_delay(y, z) + self.calc_auto_delay(y, z)
-                                     + self.calc_replace_delay(y, z) + self.calc_dissol_delay(y, z))
+                        if self.drop_counters[z] > 0:
+                            im[y][z] += self.calc_resurg_immed(y, z)
+                        else:
+                            im[y][z] += self.calc_resurg_delay(y, z)
 
-                        if Rule_Change:
-                            im[y][z] += (self.calc_resurg_immed(y, z) + self.calc_auto_immed(y, z)
-                                         + self.calc_replace_immed(y, z) + self.calc_dissol_immed(y, z))
-                            
-                bm[y] = self.calc_domin(y, bvals[y][-1])
+                        if self.rise_counters[z] > 0:
+                            im[y][z] += self.calc_auto_immed(y, z)
+                        else:
+                            im[y][z] += self.calc_auto_delay(y, z)
+                        
 
         new_predictions = []
 
@@ -128,6 +140,10 @@ class realTimeGrapher:
             cur = bvals[y][-1]
 
             change = epEffect + alphEffect + dominanceEffect + intEffect
+            if self.drop_counters[y] > 0:
+                self.drop_counters[y] -= 1
+                change = -HYPER_DROP_SUBTRACT
+
             bNext = cur + change
             if bNext > 1:
                 bNext = 1
@@ -138,8 +154,7 @@ class realTimeGrapher:
         return new_predictions
 
     def correct(self):
-        freq_data = self.game.game_mode.freq_data
-        if len(freq_data[0]) >= SLOPERANGE:
+        if len(self.freq_data[0]) >= SLOPERANGE:
             self.change_ext()
             self.change_reinf()
 
@@ -170,10 +185,28 @@ class realTimeGrapher:
                     self.lm[y][z] = 1
 
    
+    """ RULE CHANGE RESPONSE """
+    def blue_drop(self, event):
+        if self.drop_counters[0] == 0:
+            self.drop_counters[0] = HYPER_DROP_LENGTH * 10
+
+    def red_drop(self, event):
+        if self.drop_counters[1] == 0:
+            self.drop_counters[1] = HYPER_DROP_LENGTH * 10
+
+    def green_drop(self, event):
+        if self.drop_counters[2] == 0:
+            self.drop_counters[2] = HYPER_DROP_LENGTH * 10
+
+    def yellow_drop(self, event):
+        if self.drop_counters[3] == 0:
+            self.drop_counters[3] = HYPER_DROP_LENGTH * 10
+    
+    
     """ PARAMETER APPLICATION EQUATIONS"""
     def calc_ext_change(self, cur):
-        return -self.ep*cur
-        #return -self.ep/HYPER_EP_APP
+        # return -self.ep*cur
+        return -self.ep/HYPER_EP_APP
     
     def calc_reinf_change(self, cur):
         return -self.alph*(1 - cur)
@@ -197,6 +230,7 @@ class realTimeGrapher:
     def calc_auto_immed(self, y, y_prime):
         if self.lm[y][y_prime] > 0 and self.prob_data[y_prime][-1] - self.prob_data[y_prime][-SLOPERANGE] > 0:
             return (1 - self.prob_data[y][-1]) * self.lm[y][y_prime] * self.prob_data[y_prime][-1]
+        return 0
         
     def calc_replace_delay(self, y, y_prime):
         # TO DO: add phi matrix
@@ -214,7 +248,7 @@ class realTimeGrapher:
         # TO DO: add phi matrix
         return 0
 
-    def calc_domin(self, y, cur):
+    def calc_domin(self, y, cur, epEffect):
         dominanceCounter = 0
         dominanceDenominator = self.beta
 
@@ -240,7 +274,7 @@ class realTimeGrapher:
                     if self.prob_data[y][-1] > self.prob_data[z][-1]:
                         dominanceCounter += 1
             if dominanceCounter == 3 and dominanceDenominator != 0:
-                return (1 - cur) * self.beta/(HYPER_BETA_APP*dominanceDenominator)
+                return HYPER_BETA_APP_INIT * self.beta - epEffect
             return 0
 
     
@@ -325,9 +359,11 @@ class realTimeGrapher:
                 if self.freq_data[y][-1] > self.freq_data[z][-1]:
                     dominanceCounter += 1
                 
+        print(freq_slope_y)
+        print(prob_slope_y)
+        print()
         if dominanceCounter == 3 and freq_slope_y >= 0:
-            # self.beta += (freq_slope_y - prob_slope_y) / HYPER_BETA_CHANGE
-            self.beta += 0
+            self.beta += (freq_slope_y - prob_slope_y) / HYPER_BETA_CHANGE
 
     
     """ Graph Generation """

@@ -41,8 +41,6 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         freq_starting_id = freq_list[0][0]
 
-        print(freq_list[1][:])
-
         freq_line1, = self.axs[0].plot([row[1] for row in freq_list], [row[2] for row in freq_list], 'b', linestyle='solid', label="Behavior 1")
         freq_line2, = self.axs[0].plot([row[1] for row in freq_list], [row[3] for row in freq_list], 'r', linestyle='solid', label="Behavior 2")
         freq_line3, = self.axs[0].plot([row[1] for row in freq_list], [row[4] for row in freq_list], 'g', linestyle='solid', label="Behavior 3")
@@ -128,5 +126,5 @@ class Converter:
 
         plt.show()
 
-converter = Converter('Jonathan', '2', 1)
+converter = Converter('Steven14', 'B', 2)
 converter.convert()

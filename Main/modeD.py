@@ -1,5 +1,6 @@
 from modeTemplate import *
 
+# Second blue button click moves the dot; after that red moves the dot
 class ModeD(ModeTemplate):
     def __init__(self, freqprof, cursor, screen, timer, window):
         super().__init__(freqprof, cursor, screen, timer, window)

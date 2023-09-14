@@ -3,12 +3,15 @@ from infrastructure import *
 from params import *
 
 # Game modes
-from modeA import ModeA
 from modeB import ModeB
 from modeC import ModeC
 from modeD import ModeD
 from mode1 import Mode1
 from mode2 import Mode2
+
+from modeI import ModeI
+from modeII import ModeII
+from modeIII import ModeIII
 
 import pandas as pd
 
@@ -56,31 +59,28 @@ class Game:
 
     def start(self, event):
         if self.params.mode.get() == "A":
-            self.modeA()
+            pass
         elif self.params.mode.get() == "B":
             self.modeB()
         elif self.params.mode.get() == "C":
             self.modeC()
         elif self.params.mode.get() == "D":
             self.modeD()
+        elif self.params.mode.get() == "E":
+            pass
         elif self.params.mode.get() == "1":
             self.mode1()
         elif self.params.mode.get() == "2":
             self.mode2()
+        elif self.params.mode.get() == "I":
+            self.modeI()
+        elif self.params.mode.get() == "II":
+            self.modeII()
+        elif self.params.mode.get() == "III":
+            self.modeIII()
         else:
             print("Error: no game mode selected.")
             quit()
-
-    # Mode A: simplest version, blue button moves dot right
-    def modeA(self):
-        self.screen.reset()
-        self.screen.congrats.place_forget()
-        self.screen.mode_label.config(text="Game Mode A")
-        self.screen.mode_char = 'A'
-        timer = Timer()
-        self.game_mode = ModeA(self.freqprof, self.Cursor, self.screen, timer, self.params)
-        self.screen.event_generate("<<startPrediction>>")
-        # self.game_mode.start()
 
     # Mode B: a specific sequence of 4 button presses moves dot right
     def modeB(self):
@@ -114,9 +114,6 @@ class Game:
         self.game_mode = ModeD(self.freqprof, self.Cursor, self.screen, timer, self.params)
         self.screen.event_generate("<<startPrediction>>")
 
-    def modeE(self):
-        pass
-
     # Mode 1: simplest probabilistic game
     def mode1(self):
         self.screen.reset()
@@ -138,6 +135,33 @@ class Game:
         self.game_mode = Mode2(self.freqprof, self.Cursor, self.screen, timer, self.params)
         self.screen.event_generate("<<startPrediction>>")
         # self.game_mode.start()
+
+    def modeI(self):
+        self.screen.reset()
+        self.screen.congrats.place_forget()
+        timer = Timer()
+        self.screen.mode_label.config(text="Game Mode I")
+        self.screen.mode_char = 'I'
+        self.game_mode = ModeI(self.freqprof, self.Cursor, self.screen, timer, self.params)
+        self.screen.event_generate("<<startPrediction>>")
+
+    def modeII(self):
+        self.screen.reset()
+        self.screen.congrats.place_forget()
+        timer = Timer()
+        self.screen.mode_label.config(text="Game Mode II")
+        self.screen.mode_char = 'II'
+        self.game_mode = ModeII(self.freqprof, self.Cursor, self.screen, timer, self.params)
+        self.screen.event_generate("<<startPrediction>>")
+
+    def modeIII(self):
+        self.screen.reset()
+        self.screen.congrats.place_forget()
+        timer = Timer()
+        self.screen.mode_label.config(text="Game Mode III")
+        self.screen.mode_char = 'III'
+        self.game_mode = ModeIII(self.freqprof, self.Cursor, self.screen, timer, self.params)
+        self.screen.event_generate("<<startPrediction>>")
 
 # Run the game
 if __name__ == "__main__":

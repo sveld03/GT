@@ -57,7 +57,7 @@ class Params(Tk):
         self.title("Generativity Grapher 2.0")
 
         # set geometry (widthxheight)
-        self.geometry('700x400')
+        self.geometry('1050x600')
 
         # add label to self window
         lbl = Label(self, text = "Delta")
@@ -71,7 +71,7 @@ class Params(Tk):
         epLbl.grid(column = 0, row = 1)
         self.epNtr = Entry(self, width=10)
         self.epNtr.grid(column=1, row=1)
-        self.epNtr.insert(0, '.01')
+        self.epNtr.insert(0, '.1')
 
         self.deltENtr = Entry(self, width=10)
         self.deltENtr.grid(column = 2, row = 1)
@@ -93,7 +93,7 @@ class Params(Tk):
         betaLbl.grid(column = 0, row = 3)
         self.betaNtr = Entry(self, width=10)
         self.betaNtr.grid(column=1, row=3)
-        self.betaNtr.insert(0, '.01')
+        self.betaNtr.insert(0, '.1')
 
         self.deltRNtr = Entry(self, width=10)
         self.deltRNtr.grid(column = 2, row = 3)
@@ -115,64 +115,64 @@ class Params(Tk):
 
         # lambda matrix title
         lambdaLbl = Label(self, text = "Lambda Matrix", pady=15)
-        lambdaLbl.grid(column = 1, row = 9)
+        lambdaLbl.grid(column = 1, row = 14)
 
         # independent and dependent labels
         indep = Label(self, text="Independent")
-        indep.grid(column = 1, row = 10)
+        indep.grid(column = 1, row = 15)
 
         dep = Label(self, text = "Dependent")
-        dep.grid(column = 0, row = 11)
+        dep.grid(column = 0, row = 16)
 
         # display lambda matrix
         self.data = matrix()
-        self.data.grid(column = 1, row = 11)
+        self.data.grid(column = 1, row = 16)
 
         self.lm = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
         # User name
-        self.nameLbl = Label(self, text="Enter your name here: ")
-        self.nameLbl.grid(column=4, row=1)
+        self.nameLbl = Label(self, text="Name: ")
+        self.nameLbl.grid(column=6, row=1)
         self.nameNtr = Entry(self, width=10)
-        self.nameNtr.grid(column=5, row=1)
+        self.nameNtr.grid(column=7, row=1)
 
         # Trial number
         self.trialLbl = Label(self, text = "Trial: ")
-        self.trialLbl.grid(column=4, row=2)
+        self.trialLbl.grid(column=6, row=2)
         self.trialNtr = Entry(self, width=10)
-        self.trialNtr.grid(column=5, row=2)
+        self.trialNtr.grid(column=7, row=2)
         self.trialNtr.insert(0, '1')
 
         # data points
         dataLbl = Label(self, text = "Data Points: ")
-        dataLbl.grid(column = 4, row = 4)
+        dataLbl.grid(column = 4, row = 1)
         self.dataNtr = Entry(self, width=10)
-        self.dataNtr.grid(column=5, row=4)
+        self.dataNtr.grid(column=5, row=1)
         self.dataNtr.insert(0, '99999')
 
         # iterations
         iterLbl = Label(self, text = "Iterations: ")
-        iterLbl.grid(column = 4, row = 5)
+        iterLbl.grid(column = 4, row = 2)
         self.iterNtr = Entry(self, width=10)
-        self.iterNtr.grid(column=5, row=5)
+        self.iterNtr.grid(column=5, row=2)
         self.iterNtr.insert(0, '1')
 
         game_settings = Label(self, text="Game Settings:")
-        game_settings.grid(column=4, row=7)
+        game_settings.grid(column=4, row=5)
 
         self.present_modes()
 
-        windowLbl = Label(self, text = "Frequency profile window length (seconds):")
-        windowLbl.grid(column = 4, row = 11)
+        windowLbl = Label(self, text = "Frequency profile window (seconds):")
+        windowLbl.grid(column = 4, row = 6)
         self.windowNtr = Entry(self, width=10)
-        self.windowNtr.grid(column = 5, row = 11)
+        self.windowNtr.grid(column = 5, row = 6)
         self.windowNtr.insert(0, '3')
 
         # submit button
         submit = Button(self, text = "Start Game", fg = "red", command=self.store_params)
 
         # set Button grid
-        submit.grid(column=5, row=13)
+        submit.grid(column=7, row=5)
 
     # Game mode menu
     def present_modes(self):
@@ -186,10 +186,18 @@ class Params(Tk):
         self.btnC.grid(column=4, row=9)
         self.btnD = ttk.Radiobutton(self, text="Game Mode D", value="D", variable=self.mode)
         self.btnD.grid(column=5, row=9)
+        self.btnE = ttk.Radiobutton(self, text="Game Mode E", value="E", variable=self.mode)
+        self.btnE.grid(column=4, row=10)
         self.btn1 = ttk.Radiobutton(self, text="Game Mode 1", value="1", variable=self.mode)
-        self.btn1.grid(column=4, row=10)
+        self.btn1.grid(column=5, row=10)
         self.btn2 = ttk.Radiobutton(self, text="Game Mode 2", value="2", variable=self.mode)
-        self.btn2.grid(column=5, row=10)
+        self.btn2.grid(column=4, row=11)
+        self.btnI = ttk.Radiobutton(self, text="Game Mode I", value="I", variable=self.mode)
+        self.btnI.grid(column=5, row=11)
+        self.btnII = ttk.Radiobutton(self, text="Game Mode II", value="II", variable=self.mode)
+        self.btnII.grid(column=4, row=12)
+        self.btnIII = ttk.Radiobutton(self, text="Game Mode III", value="III", variable=self.mode)
+        self.btnIII.grid(column=5, row=12)
 
     def store_params(self):
         # Fill in lambda matrix list with user-inputted values
