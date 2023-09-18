@@ -90,7 +90,7 @@ class realTimeGrapher:
         em = []
 
         # reinforcement matrix (quantity of increase by reinforcement for each behavior)
-        am = []
+        # am = []
 
         # Dominance matrix (quantity of increase by dominance for each behavior)
         bm = [0, 0, 0, 0]
@@ -104,10 +104,10 @@ class realTimeGrapher:
         # populate matrices with values for this cycle
         for y in range(4):
             epEffect = self.calc_ext_change(bvals[y][-1])
-            alphEffect = self.calc_reinf_change(bvals[y][-1])
+            # alphEffect = self.calc_reinf_change(bvals[y][-1])
 
             em.append(epEffect)
-            am.append(alphEffect)
+            # am.append(alphEffect)
             bm[y] = self.calc_domin(y, bvals[y][-1], epEffect)
 
             intEffect = 0
@@ -132,17 +132,24 @@ class realTimeGrapher:
         # corrections = self.correct()
         for y in range(4):
             epEffect = em[y]
-            alphEffect = am[y]
+            # alphEffect = am[y]
             dominanceEffect = bm[y]
             intEffect = 0
             for z in range(4):
                 intEffect += im[y][z]
             cur = bvals[y][-1]
 
-            change = epEffect + alphEffect + dominanceEffect + intEffect
             if self.drop_counters[y] > 0:
+                dominanceEffect = 0
+            change = epEffect + dominanceEffect + intEffect # + alphEffect
+            if self.drop_counters[y] > 0:
+                # change = -HYPER_DROP_SUBTRACT
                 self.drop_counters[y] -= 1
-                change = -HYPER_DROP_SUBTRACT
+                if self.drop_counters[y] >= HYPER_DROP_LENGTH * 10 - 3:
+                    change = 0
+
+            if SLOPERANGE <= len(self.freq_data[0]) and len(self.freq_data[0]) <= SLOPERANGE + 1:
+                change = 0
 
             bNext = cur + change
             if bNext > 1:
@@ -155,8 +162,9 @@ class realTimeGrapher:
 
     def correct(self):
         if len(self.freq_data[0]) >= SLOPERANGE:
-            self.change_ext()
-            self.change_reinf()
+            self.change_ep()
+            # self.change_ext()
+            # self.change_reinf()
 
             for y in range(4):
                 for z in range(4):
@@ -208,18 +216,18 @@ class realTimeGrapher:
         # return -self.ep*cur
         return -self.ep/HYPER_EP_APP
     
-    def calc_reinf_change(self, cur):
-        return -self.alph*(1 - cur)
-        #return self.alph/HYPER_ALPH_APP
+    # def calc_reinf_change(self, cur):
+    #     return -self.alph*(1 - cur)
+    #     #return self.alph/HYPER_ALPH_APP
     
     def calc_resurg_delay(self, y, y_prime):
         if self.lm[y][y_prime] < 0 and self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE] < 0:
-            return self.lm[y][y_prime] * (self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE])
+            return HYPER_RESURG_DELAY_APP * self.lm[y][y_prime] * (self.freq_data[y_prime][-1] - self.freq_data[y_prime][-SLOPERANGE])
         return 0
     
     def calc_resurg_immed(self, y, y_prime):
         if self.lm[y][y_prime] < 0 and self.prob_data[y_prime][-1] - self.prob_data[y_prime][-SLOPERANGE] < 0:
-            return self.lm[y][y_prime] * (self.prob_data[y_prime][-1] - self.prob_data[y_prime][-SLOPERANGE])
+            return HYPER_RESURG_IMMED_APP * self.lm[y][y_prime] * (self.prob_data[y_prime][-1] - self.prob_data[y_prime][-SLOPERANGE])
         return 0
         
     def calc_auto_delay(self, y, y_prime):
@@ -263,7 +271,7 @@ class realTimeGrapher:
                     if self.freq_data[y][-1] > self.freq_data[z][-1] or freq_slope_y > freq_slope_z:
                         dominanceCounter += 1
                     
-            if dominanceCounter == 3 and freq_slope_y >= 0 and dominanceDenominator != 0:
+            if dominanceCounter == 3 and freq_slope_y >= -0.03 and dominanceDenominator != 0:
                 return (1 - cur) * self.beta/(HYPER_BETA_APP*dominanceDenominator)
             return 0
         
@@ -279,31 +287,46 @@ class realTimeGrapher:
 
     
     """ PARAMETER UPDATE EQUATIONS """
+    def change_ep(self):
+        change = 0
+        for n in range(4):
+            freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
+            prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
+            if freq_slope < -0.01:
+                change += prob_slope - freq_slope
+        self.ep += change / HYPER_EP_CHANGE
+    
     def change_ext(self):
         low_freq_val = False
         overshoot_count = 0
         deltas = []
         for n in range(4):
-            if self.freq_data[n][-1] < self.prob_data[n][-1]:
+            if self.freq_data[n][-1] <= self.prob_data[n][-1 - PREDICTION_TIME] or self.freq_data[n][-1] < .1:
                 low_freq_val = True
+                overshoot_count += 1
 
             freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
             prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
-            if prob_slope >= freq_slope:
-                overshoot_count += 1
+            # if prob_slope >= freq_slope:
+            #     overshoot_count += 1
             deltas.append(freq_slope - prob_slope)
 
         ep_change = 0
         alph_change = 0
         if low_freq_val == True and overshoot_count == 4:
             for n in range(4):
-                ep_change -= deltas[n]
-                alph_change += deltas[n]
+                ep_change -= self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
+                alph_change += self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
             ep_change /= HYPER_EP_CHANGE
             alph_change /= HYPER_ALPH_CHANGE
 
+        if ep_change < 0:
+            ep_change = 0
+        if alph_change < 0:
+            alph_change = 0
+
         self.ep += ep_change
-        self.alph += alph_change
+        # self.alph += alph_change
 
     def change_reinf(self):
         high_freq_count = 0
@@ -325,7 +348,7 @@ class realTimeGrapher:
             ep_change = -sum_slope_diffs/HYPER_EP_CHANGE
 
         self.ep += ep_change
-        self.alph += alph_change
+        # self.alph += alph_change
     
     def change_resurg(self, y, y_prime):
         freq_slope_y = self.freq_data[y][-1] - self.freq_data[y][-SLOPERANGE]
@@ -349,7 +372,8 @@ class realTimeGrapher:
 
     def change_domin(self, y):
         freq_slope_y = self.freq_data[y][-1] - self.freq_data[y][-SLOPERANGE]
-        prob_slope_y = self.prob_data[y][-1 - PREDICTION_TIME] - self.prob_data[y][-SLOPERANGE - PREDICTION_TIME]
+
+        prob_slope_future = self.prob_data[y][-1] - self.prob_data[y][-SLOPERANGE]
         
         dominanceCounter = 0
         
@@ -359,11 +383,20 @@ class realTimeGrapher:
                 if self.freq_data[y][-1] > self.freq_data[z][-1]:
                     dominanceCounter += 1
                 
-        print(freq_slope_y)
-        print(prob_slope_y)
-        print()
-        if dominanceCounter == 3 and freq_slope_y >= 0:
-            self.beta += (freq_slope_y - prob_slope_y) / HYPER_BETA_CHANGE
+        # print(freq_slope_y)
+        # print(prob_slope_y)
+        # print()
+        # if dominanceCounter == 3 and freq_slope_y >= 0:
+        #     self.beta += (freq_slope_y - prob_slope_y) / HYPER_BETA_CHANGE
+
+        if dominanceCounter == 3:
+            # change = 0
+            # if prob_slope_future != 0:
+            #     change = (self.freq_data[y][-1] - self.prob_data[y][-1 - PREDICTION_TIME]) / (HYPER_BETA_CHANGE * abs(prob_slope_future))
+            # if change < 0 and self.prob_data[y][1 - PREDICTION_TIME] < .2:
+            #     change = 0
+            change = (self.freq_data[y][-1] - self.prob_data[y][-1 - PREDICTION_TIME]) / HYPER_BETA_CHANGE
+            self.beta += change
 
     
     """ Graph Generation """

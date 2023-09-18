@@ -135,7 +135,10 @@ class ModeTemplate:
         self.queue.put(new_freq_data)
         
         for i in range(4):
-            self.freq_data[i].append(new_freq_data[i])
+            if len(self.freq_data[i]) >= 2:
+                self.freq_data[i].append((new_freq_data[i] + self.freq_data[i][-1] + self.freq_data[i][-2])/3)
+            else:
+                self.freq_data[i].append(new_freq_data[i])
 
         window_start = 0
         if frame <= 100:
@@ -178,9 +181,9 @@ class ModeTemplate:
         self.btnY.config(command=self.move_yellow)
 
     # Move right function that sets run = False
-    def move_right(self):
+    def move_right(self, distance=40):
         if self.screen.canvas.coords(self.screen.dot)[2] < 1225:
-            self.screen.canvas.move(self.screen.dot, 40, 0)
+            self.screen.canvas.move(self.screen.dot, distance, 0)
             return True
         else:
             self.run = False
@@ -191,23 +194,23 @@ class ModeTemplate:
             return False
 
     # Moves dot left
-    def move_left(self):
+    def move_left(self, distance=40):
         if self.screen.canvas.coords(self.screen.dot)[0] > 0:
-            self.screen.canvas.move(self.screen.dot, -40, 0)
+            self.screen.canvas.move(self.screen.dot, -distance, 0)
             return True
         return False
 
     # Moves dot up
-    def move_up(self):
+    def move_up(self, distance=40):
         if self.screen.canvas.coords(self.screen.dot)[1] > 0:
-            self.screen.canvas.move(self.screen.dot, 0, -40)
+            self.screen.canvas.move(self.screen.dot, 0, -distance)
             return True
         return False
 
     # Moves dot down
-    def move_down(self):
+    def move_down(self, distance=40):
         if self.screen.canvas.coords(self.screen.dot)[3] < 450:
-            self.screen.canvas.move(self.screen.dot, 0, 40)
+            self.screen.canvas.move(self.screen.dot, 0, distance)
             return True
         return False
 

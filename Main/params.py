@@ -178,16 +178,10 @@ class Params(Tk):
     def present_modes(self):
         self.mode = StringVar(self, "none")
         
-        self.btnA = ttk.Radiobutton(self, text="Game Mode A", value="A", variable=self.mode)
-        self.btnA.grid(column=4, row=8)
-        self.btnB = ttk.Radiobutton(self, text="Game Mode B", value="B", variable=self.mode)
-        self.btnB.grid(column=5, row=8)
         self.btnC = ttk.Radiobutton(self, text="Game Mode C", value="C", variable=self.mode)
         self.btnC.grid(column=4, row=9)
         self.btnD = ttk.Radiobutton(self, text="Game Mode D", value="D", variable=self.mode)
         self.btnD.grid(column=5, row=9)
-        self.btnE = ttk.Radiobutton(self, text="Game Mode E", value="E", variable=self.mode)
-        self.btnE.grid(column=4, row=10)
         self.btn1 = ttk.Radiobutton(self, text="Game Mode 1", value="1", variable=self.mode)
         self.btn1.grid(column=5, row=10)
         self.btn2 = ttk.Radiobutton(self, text="Game Mode 2", value="2", variable=self.mode)
@@ -198,6 +192,8 @@ class Params(Tk):
         self.btnII.grid(column=4, row=12)
         self.btnIII = ttk.Radiobutton(self, text="Game Mode III", value="III", variable=self.mode)
         self.btnIII.grid(column=5, row=12)
+        self.btnIII = ttk.Radiobutton(self, text="Game Mode IV", value="IV", variable=self.mode)
+        self.btnIII.grid(column=4, row=13)
 
     def store_params(self):
         # Fill in lambda matrix list with user-inputted values

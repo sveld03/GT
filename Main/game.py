@@ -3,7 +3,6 @@ from infrastructure import *
 from params import *
 
 # Game modes
-from modeB import ModeB
 from modeC import ModeC
 from modeD import ModeD
 from mode1 import Mode1
@@ -12,6 +11,7 @@ from mode2 import Mode2
 from modeI import ModeI
 from modeII import ModeII
 from modeIII import ModeIII
+from modeIV import ModeIV
 
 import pandas as pd
 
@@ -58,16 +58,10 @@ class Game:
         atexit.register(self.freqprof.close)
 
     def start(self, event):
-        if self.params.mode.get() == "A":
-            pass
-        elif self.params.mode.get() == "B":
-            self.modeB()
-        elif self.params.mode.get() == "C":
+        if self.params.mode.get() == "C":
             self.modeC()
         elif self.params.mode.get() == "D":
             self.modeD()
-        elif self.params.mode.get() == "E":
-            pass
         elif self.params.mode.get() == "1":
             self.mode1()
         elif self.params.mode.get() == "2":
@@ -78,20 +72,11 @@ class Game:
             self.modeII()
         elif self.params.mode.get() == "III":
             self.modeIII()
+        elif self.params.mode.get() == "IV":
+            self.modeIV()
         else:
             print("Error: no game mode selected.")
             quit()
-
-    # Mode B: a specific sequence of 4 button presses moves dot right
-    def modeB(self):
-        self.screen.reset()
-        self.screen.congrats.place_forget()
-        timer = Timer()
-        self.screen.mode_label.config(text="Game Mode B")
-        self.screen.mode_char = 'B'
-        self.game_mode = ModeB(self.freqprof, self.Cursor, self.screen, timer, self.params)
-        self.screen.event_generate("<<startPrediction>>")
-        # self.game_mode.start()
 
     # Mode C: double-click green for 1st half, red-yellow for 2nd half
     def modeC(self):
@@ -161,6 +146,15 @@ class Game:
         self.screen.mode_label.config(text="Game Mode III")
         self.screen.mode_char = 'III'
         self.game_mode = ModeIII(self.freqprof, self.Cursor, self.screen, timer, self.params)
+        self.screen.event_generate("<<startPrediction>>")
+
+    def modeIV(self):
+        self.screen.reset()
+        self.screen.congrats.place_forget()
+        timer = Timer()
+        self.screen.mode_label.config(text="Game Mode IV")
+        self.screen.mode_char = 'IV'
+        self.game_mode = ModeIV(self.freqprof, self.Cursor, self.screen, timer, self.params)
         self.screen.event_generate("<<startPrediction>>")
 
 # Run the game

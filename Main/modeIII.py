@@ -7,7 +7,6 @@ class ModeIII(ModeTemplate):
         self.yellowCounter = 1
         self.redCounter = 1
 
-    # Move dot right, then record blue button click
     def move_yellow(self):
         super().move_yellow()
         self.yellowCounter += 1
@@ -17,7 +16,6 @@ class ModeIII(ModeTemplate):
                 self.yellowCounter += 1
                 self.screen.event_generate("<<yellowDrop>>")
 
-    # Move dot left, then record red button click
     def move_red(self):
         super().move_red()
         if self.yellowCounter > 10:

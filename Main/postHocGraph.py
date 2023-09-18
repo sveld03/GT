@@ -126,5 +126,5 @@ class Converter:
 
         plt.show()
 
-converter = Converter('Steven14', 'B', 2)
+converter = Converter('Vicky', '1', 1)
 converter.convert()
