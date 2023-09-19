@@ -151,6 +151,13 @@ class realTimeGrapher:
             if SLOPERANGE <= len(self.freq_data[0]) and len(self.freq_data[0]) <= SLOPERANGE + 1:
                 change = 0
 
+            init_dominance_counter = 0
+            for z in range(4):
+                if self.prob_data[y][0] > self.prob_data[z][0]:
+                    init_dominance_counter += 1
+            if len(self.freq_data[0]) < 40 and init_dominance_counter == 3 and dominanceEffect == 0:
+                change = HYPER_BETA_APP_INIT * self.beta
+
             bNext = cur + change
             if bNext > 1:
                 bNext = 1
@@ -268,7 +275,8 @@ class realTimeGrapher:
                     freq_slope_z = self.freq_data[z][-1] - self.freq_data[z][-SLOPERANGE]
                     dominanceDenominator += self.freq_data[z][-1]
 
-                    if self.freq_data[y][-1] > self.freq_data[z][-1] or freq_slope_y > freq_slope_z:
+                    #if self.freq_data[y][-1] > self.freq_data[z][-1] or freq_slope_y > freq_slope_z:
+                    if self.freq_data[y][-1] > self.freq_data[z][-1] + .1:
                         dominanceCounter += 1
                     
             if dominanceCounter == 3 and freq_slope_y >= -0.03 and dominanceDenominator != 0:
@@ -296,59 +304,59 @@ class realTimeGrapher:
                 change += prob_slope - freq_slope
         self.ep += change / HYPER_EP_CHANGE
     
-    def change_ext(self):
-        low_freq_val = False
-        overshoot_count = 0
-        deltas = []
-        for n in range(4):
-            if self.freq_data[n][-1] <= self.prob_data[n][-1 - PREDICTION_TIME] or self.freq_data[n][-1] < .1:
-                low_freq_val = True
-                overshoot_count += 1
+    # def change_ext(self):
+    #     low_freq_val = False
+    #     overshoot_count = 0
+    #     deltas = []
+    #     for n in range(4):
+    #         if self.freq_data[n][-1] <= self.prob_data[n][-1 - PREDICTION_TIME] or self.freq_data[n][-1] < .1:
+    #             low_freq_val = True
+    #             overshoot_count += 1
 
-            freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
-            prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
-            # if prob_slope >= freq_slope:
-            #     overshoot_count += 1
-            deltas.append(freq_slope - prob_slope)
+    #         freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
+    #         prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
+    #         # if prob_slope >= freq_slope:
+    #         #     overshoot_count += 1
+    #         deltas.append(freq_slope - prob_slope)
 
-        ep_change = 0
-        alph_change = 0
-        if low_freq_val == True and overshoot_count == 4:
-            for n in range(4):
-                ep_change -= self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
-                alph_change += self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
-            ep_change /= HYPER_EP_CHANGE
-            alph_change /= HYPER_ALPH_CHANGE
+    #     ep_change = 0
+    #     alph_change = 0
+    #     if low_freq_val == True and overshoot_count == 4:
+    #         for n in range(4):
+    #             ep_change -= self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
+    #             alph_change += self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
+    #         ep_change /= HYPER_EP_CHANGE
+    #         alph_change /= HYPER_ALPH_CHANGE
 
-        if ep_change < 0:
-            ep_change = 0
-        if alph_change < 0:
-            alph_change = 0
+    #     if ep_change < 0:
+    #         ep_change = 0
+    #     if alph_change < 0:
+    #         alph_change = 0
 
-        self.ep += ep_change
-        # self.alph += alph_change
+    #     self.ep += ep_change
+    #     # self.alph += alph_change
 
-    def change_reinf(self):
-        high_freq_count = 0
-        sum_slope_diffs = 0
-        deltas = []
-        for n in range(4):
-            if self.freq_data[n][-1] < self.prob_data[n][-1]:
-                high_freq_count += 1
+    # def change_reinf(self):
+    #     high_freq_count = 0
+    #     sum_slope_diffs = 0
+    #     deltas = []
+    #     for n in range(4):
+    #         if self.freq_data[n][-1] < self.prob_data[n][-1]:
+    #             high_freq_count += 1
 
-            freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
-            prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
-            sum_slope_diffs += freq_slope - prob_slope
-            deltas.append(freq_slope - prob_slope)
+    #         freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
+    #         prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
+    #         sum_slope_diffs += freq_slope - prob_slope
+    #         deltas.append(freq_slope - prob_slope)
 
-        alph_change = 0
-        ep_change = 0
-        if high_freq_count == 4 and sum_slope_diffs > 0:
-            alph_change = sum_slope_diffs/HYPER_ALPH_CHANGE
-            ep_change = -sum_slope_diffs/HYPER_EP_CHANGE
+    #     alph_change = 0
+    #     ep_change = 0
+    #     if high_freq_count == 4 and sum_slope_diffs > 0:
+    #         alph_change = sum_slope_diffs/HYPER_ALPH_CHANGE
+    #         ep_change = -sum_slope_diffs/HYPER_EP_CHANGE
 
-        self.ep += ep_change
-        # self.alph += alph_change
+    #     self.ep += ep_change
+    #     # self.alph += alph_change
     
     def change_resurg(self, y, y_prime):
         freq_slope_y = self.freq_data[y][-1] - self.freq_data[y][-SLOPERANGE]
@@ -401,30 +409,51 @@ class realTimeGrapher:
     
     """ Graph Generation """
     def accuracy_graph(self, frame):
-        freq_data = self.freq_data
-        if len(freq_data[0]) >= 1:
-            if len(freq_data[0]) >= 1 + PREDICTION_TIME * 10:
-                mean = 0
-                for n in range(4):
-                    null_hyp = freq_data[n][-(1 + PREDICTION_TIME * 10)]
-                    null_error = abs(null_hyp - freq_data[n][-1])
-                    prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
-                    acc = null_error - prob_error
-                    self.acc_data[n].append(acc)
-                    mean += acc
-                mean /= 4
-                self.acc_data[4].append(mean)
-            else:
-                mean = 0
-                for n in range(4):
-                    null_hyp = freq_data[n][0]
-                    null_error = abs(null_hyp - freq_data[n][-1])
-                    prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
-                    acc = null_error - prob_error
-                    self.acc_data[n].append(acc)
-                    mean += acc
-                mean /= 4
-                self.acc_data[4].append(mean)
+            
+        # Calculate Cohen's kappa for agreement between probability profile and frequency profile at each frame
+        if len(self.freq_data[0]) >= 1:
+            avg_po = 0
+
+            pe = 2/3
+            for n in range(4):
+                po = 1 - abs(self.freq_data[n][-1] - self.prob_data[n][-1])
+                numerator = po - pe
+                denominator = 1 - pe
+                kappa = numerator / denominator
+                self.acc_data[n].append(kappa)
+
+                avg_po += po
+            avg_po /= 4
+            numerator = avg_po - pe
+            denominator = 1 - pe
+            general_kappa = numerator / denominator
+            self.acc_data[4].append(general_kappa)
+
+
+        # freq_data = self.freq_data
+        # if len(freq_data[0]) >= 1:
+        #     if len(freq_data[0]) >= 1 + PREDICTION_TIME * 10:
+        #         mean = 0
+        #         for n in range(4):
+        #             null_hyp = freq_data[n][-(1 + PREDICTION_TIME * 10)]
+        #             null_error = abs(null_hyp - freq_data[n][-1])
+        #             prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
+        #             acc = null_error - prob_error
+        #             self.acc_data[n].append(acc)
+        #             mean += acc
+        #         mean /= 4
+        #         self.acc_data[4].append(mean)
+        #     else:
+        #         mean = 0
+        #         for n in range(4):
+        #             null_hyp = freq_data[n][0]
+        #             null_error = abs(null_hyp - freq_data[n][-1])
+        #             prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
+        #             acc = null_error - prob_error
+        #             self.acc_data[n].append(acc)
+        #             mean += acc
+        #         mean /= 4
+        #         self.acc_data[4].append(mean)
         
             x_data = self.game.game_mode.x_data
 
@@ -507,7 +536,7 @@ class realTimeGrapher:
         self.game.game_mode.ax.set_ylabel('Behavioral Frequencies')
         self.game.game_mode.fig.legend()
 
-        self.acc_ax.set_ylabel('Accuracy')
+        self.acc_ax.set_ylabel("Accuracy (Cohen's kappa)")
 
         plt.show()
 

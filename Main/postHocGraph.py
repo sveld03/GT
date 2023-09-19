@@ -18,7 +18,7 @@ class Converter:
         self.mode = mode
         self.trial = trial
 
-        self.fig, self.axs = plt.subplots(3, 1, sharex=False, sharey=False)
+        self.fig, self.axs = plt.subplots(4, 1, sharex=False, sharey=False)
 
     def convert(self):
 
@@ -72,6 +72,32 @@ class Converter:
         prob_line1, = self.axs[1].plot([row[1] for row in prob_list], [row[5] for row in prob_list], 'y', linestyle='solid')
 
 
+        """Accuracy Graph"""
+        # Select data from database that has the desired user name, game mode, and trial number
+        self.Cursor.execute('SELECT id, time, B1, B2, B3, B4, mean, cumulative FROM Accuracies WHERE name = ? AND mode = ? AND trial = ?', 
+                    (self.name, self.mode, self.trial))
+        acc_subset = self.Cursor.fetchall()
+
+        # Print error message to terminal if sample is not continuous
+        for n in range(len(acc_subset) - 1):
+            if acc_subset[n][0] + 1 != acc_subset[n + 1][0]:
+                print("Error: sample is not continuous, may be a combination of multiple trials")
+
+        # Convert database subset to list
+        acc_list = []
+        for row in acc_subset:
+            acc_list.append(list(row))
+
+        # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
+        acc_starting_id = acc_list[0][0]
+
+        acc_line1, = self.axs[3].plot([row[1] for row in acc_list], [row[2] for row in acc_list], 'b', linestyle='solid')
+        acc_line2, = self.axs[3].plot([row[1] for row in acc_list], [row[3] for row in acc_list], 'r', linestyle='solid')
+        acc_line3, = self.axs[3].plot([row[1] for row in acc_list], [row[4] for row in acc_list], 'g', linestyle='solid')
+        acc_line4, = self.axs[3].plot([row[1] for row in acc_list], [row[5] for row in acc_list], 'y', linestyle='solid')
+        acc_line_mean, = self.axs[3].plot([row[1] for row in acc_list], [row[6] for row in acc_list], 'k', linestyle='dotted', label="general accuracy")
+        acc_line_cumul, = self.axs[3].plot([row[1] for row in acc_list], [row[7] for row in acc_list], 'm', linestyle='dotted', label="cumulative accuracy")
+
         """Parameter Graph"""
         # Select data from database that has the desired user name, game mode, and trial number
         self.Cursor.execute('SELECT id, time, beta, alpha, l12, l13, l14, l21, l23, l24, l31, l32, l34, l41, l42, l43 FROM upParameters WHERE name = ? AND mode = ? AND trial = ?', 
@@ -123,8 +149,9 @@ class Converter:
         self.axs[0].set_ylabel("Frequencies")
         self.axs[1].set_ylabel("Probabilities")
         self.axs[2].set_ylabel("Parameters")
+        self.axs[3].set_ylabel("Accuracy")
 
         plt.show()
 
-converter = Converter('Vicky', '1', 1)
+converter = Converter('Jeffrey', 'II', 1)
 converter.convert()
