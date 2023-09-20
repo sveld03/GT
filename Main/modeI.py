@@ -1,5 +1,6 @@
 from modeTemplate import *
 
+# Simplest mode of all -- blue works
 class ModeI(ModeTemplate):
     def __init__(self, freqprof, cursor, screen, timer, window):
         super().__init__(freqprof, cursor, screen, timer, window)

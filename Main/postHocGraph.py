@@ -5,8 +5,8 @@ import csv
 
 from matplotlib import pyplot as plt
 
-# Selects data for 1 game from SQLite database, then converts it to a CSV file that is ready to be turned into a frequency profile
-class Converter:
+# Selects data for 1 game from SQLite database, then graphs frequency profile, probability profile, accuracies, and parameters over the trial
+class PostHocGrapher:
 
     # Creates database connection, stores game information: user name, game mode, and trial number
     def __init__(self, name, mode, trial):
@@ -18,9 +18,9 @@ class Converter:
         self.mode = mode
         self.trial = trial
 
-        self.fig, self.axs = plt.subplots(4, 1, sharex=False, sharey=False)
+        self.fig, self.axs = plt.subplots(4, 1, sharex=False, sharey=False, figsize=(9, 9))
 
-    def convert(self):
+    def graph(self):
 
         """Frequency Graph"""
         # Select data from database that has the desired user name, game mode, and trial number
@@ -41,6 +41,7 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         freq_starting_id = freq_list[0][0]
 
+        # Create the 4 lines of the frequency profile
         freq_line1, = self.axs[0].plot([row[1] for row in freq_list], [row[2] for row in freq_list], 'b', linestyle='solid', label="Behavior 1")
         freq_line2, = self.axs[0].plot([row[1] for row in freq_list], [row[3] for row in freq_list], 'r', linestyle='solid', label="Behavior 2")
         freq_line3, = self.axs[0].plot([row[1] for row in freq_list], [row[4] for row in freq_list], 'g', linestyle='solid', label="Behavior 3")
@@ -66,6 +67,7 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         prob_starting_id = prob_list[0][0]
 
+        # Create the 4 lines of the probability profile
         prob_line1, = self.axs[1].plot([row[1] for row in prob_list], [row[2] for row in prob_list], 'b', linestyle='solid')
         prob_line2, = self.axs[1].plot([row[1] for row in prob_list], [row[3] for row in prob_list], 'r', linestyle='solid')
         prob_line1, = self.axs[1].plot([row[1] for row in prob_list], [row[4] for row in prob_list], 'g', linestyle='solid')
@@ -91,6 +93,7 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         acc_starting_id = acc_list[0][0]
 
+        # Create the 6 lines of the accuracy profile
         acc_line1, = self.axs[3].plot([row[1] for row in acc_list], [row[2] for row in acc_list], 'b', linestyle='solid')
         acc_line2, = self.axs[3].plot([row[1] for row in acc_list], [row[3] for row in acc_list], 'r', linestyle='solid')
         acc_line3, = self.axs[3].plot([row[1] for row in acc_list], [row[4] for row in acc_list], 'g', linestyle='solid')
@@ -125,6 +128,7 @@ class Converter:
         # Keep track of ID of first row of subset, to be subtracted from other IDs for indexing purposes
         param_starting_id = param_list[0][0]
 
+        # Create the 15 lines of the parameter profile
         param_line_beta, = self.axs[2].plot([row[1] for row in param_list], [row[2] for row in param_list], 'b', linestyle='dotted', label="Beta")
         param_line_alph, = self.axs[2].plot([row[1] for row in param_list], [row[3] for row in param_list], 'r', linestyle='dotted', label="Alpha")
         param_line_l12, = self.axs[2].plot([row[1] for row in param_list], [row[4] for row in param_list], 'g', linestyle='dotted', label="lambda12")
@@ -143,8 +147,13 @@ class Converter:
 
 
         self.fig.legend()
-        self.fig.set_figheight(9)
+        self.fig.subplots_adjust(right=0.75)
 
+        # Frequency and probability profiles should have same scale so they can be compared visually
+        self.axs[0].set_ylim(0, 1)
+        self.axs[1].set_ylim(0, 1)
+
+        # Graph labels
         self.axs[2].set_xlabel("Time")
         self.axs[0].set_ylabel("Frequencies")
         self.axs[1].set_ylabel("Probabilities")
@@ -153,5 +162,6 @@ class Converter:
 
         plt.show()
 
-converter = Converter('Jeffrey', 'II', 1)
-converter.convert()
+# Generate the graphs
+graph = PostHocGrapher('Teddy', 'IV', 1)
+graph.graph()

@@ -1,15 +1,9 @@
 # primary graphics library
 from tkinter import *
-
 from tkinter import ttk
 
-# # data visualization
-
-# import matplotlib as mpl
+# data visualization
 import matplotlib.pyplot as plt
-
-# # Arrays
-# import numpy as np
 
 # lambda matrix
 class matrix(Frame):
@@ -160,8 +154,10 @@ class Params(Tk):
         game_settings = Label(self, text="Game Settings:")
         game_settings.grid(column=4, row=5)
 
+        # Display game mode radio buttons
         self.present_modes()
 
+        # Frequency profile window input
         windowLbl = Label(self, text = "Frequency profile window (seconds):")
         windowLbl.grid(column = 4, row = 6)
         self.windowNtr = Entry(self, width=10)
@@ -252,6 +248,7 @@ class Params(Tk):
         self.alph = float(self.alphNtr.get())
         self.beta = float(self.betaNtr.get())
 
+        # When the researcher clicks the button to start the game, start the game and prime the graph to start upon the first button click
         self.event_generate("<<startGame>>")
         self.event_generate("<<startGraph>>")
     

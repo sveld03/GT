@@ -11,6 +11,8 @@ class ModeD(ModeTemplate):
     def move_blue(self):
         super().move_blue()
         self.blueCounter += 1
+
+        # If this is the second time the blue button has been clicked, move the dot
         if self.blueCounter == 2:
             super().move_right()
             self.blueCounter += 1
@@ -18,5 +20,7 @@ class ModeD(ModeTemplate):
     # Move dot left, then record red button click
     def move_red(self):
         super().move_red()
+
+        # So long as blue has already been clicked twice, move the dot
         if self.blueCounter > 2:
             super().move_right()

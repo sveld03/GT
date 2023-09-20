@@ -1088,3 +1088,90 @@
 #         super().move_yellow()
 #         self.input_seq.append('y')
 #         super().move_up()
+
+
+"""realTimeGrapher.py"""
+# def change_ext(self):
+    #     low_freq_val = False
+    #     overshoot_count = 0
+    #     deltas = []
+    #     for n in range(4):
+    #         if self.freq_data[n][-1] <= self.prob_data[n][-1 - PREDICTION_TIME] or self.freq_data[n][-1] < .1:
+    #             low_freq_val = True
+    #             overshoot_count += 1
+
+    #         freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
+    #         prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
+    #         # if prob_slope >= freq_slope:
+    #         #     overshoot_count += 1
+    #         deltas.append(freq_slope - prob_slope)
+
+    #     ep_change = 0
+    #     alph_change = 0
+    #     if low_freq_val == True and overshoot_count == 4:
+    #         for n in range(4):
+    #             ep_change -= self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
+    #             alph_change += self.freq_data[n][-1] - self.prob_data[n][-1 - PREDICTION_TIME]
+    #         ep_change /= HYPER_EP_CHANGE
+    #         alph_change /= HYPER_ALPH_CHANGE
+
+    #     if ep_change < 0:
+    #         ep_change = 0
+    #     if alph_change < 0:
+    #         alph_change = 0
+
+    #     self.ep += ep_change
+    #     # self.alph += alph_change
+
+    # def change_reinf(self):
+    #     high_freq_count = 0
+    #     sum_slope_diffs = 0
+    #     deltas = []
+    #     for n in range(4):
+    #         if self.freq_data[n][-1] < self.prob_data[n][-1]:
+    #             high_freq_count += 1
+
+    #         freq_slope = self.freq_data[n][-1] - self.freq_data[n][-SLOPERANGE]
+    #         prob_slope = self.prob_data[n][-1 - PREDICTION_TIME] - self.prob_data[n][-SLOPERANGE - PREDICTION_TIME]
+    #         sum_slope_diffs += freq_slope - prob_slope
+    #         deltas.append(freq_slope - prob_slope)
+
+    #     alph_change = 0
+    #     ep_change = 0
+    #     if high_freq_count == 4 and sum_slope_diffs > 0:
+    #         alph_change = sum_slope_diffs/HYPER_ALPH_CHANGE
+    #         ep_change = -sum_slope_diffs/HYPER_EP_CHANGE
+
+    #     self.ep += ep_change
+    #     # self.alph += alph_change
+
+    # freq_data = self.freq_data
+        # if len(freq_data[0]) >= 1:
+        #     if len(freq_data[0]) >= 1 + PREDICTION_TIME * 10:
+        #         mean = 0
+        #         for n in range(4):
+        #             null_hyp = freq_data[n][-(1 + PREDICTION_TIME * 10)]
+        #             null_error = abs(null_hyp - freq_data[n][-1])
+        #             prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
+        #             acc = null_error - prob_error
+        #             self.acc_data[n].append(acc)
+        #             mean += acc
+        #         mean /= 4
+        #         self.acc_data[4].append(mean)
+        #     else:
+        #         mean = 0
+        #         for n in range(4):
+        #             null_hyp = freq_data[n][0]
+        #             null_error = abs(null_hyp - freq_data[n][-1])
+        #             prob_error = abs(self.prob_data[n][-(1 + PREDICTION_TIME * 10)] - freq_data[n][-1])
+        #             acc = null_error - prob_error
+        #             self.acc_data[n].append(acc)
+        #             mean += acc
+        #         mean /= 4
+        #         self.acc_data[4].append(mean)
+
+        # bval_smooth = b_values[num]
+            # if len(self.prob_data[num]) >= 40:
+            #     for m in range(1, 40):
+            #         bval_smooth += self.prob_data[num][-m]
+            #     bval_smooth /= 40

@@ -1,11 +1,13 @@
+""" Infrastructure file -- base file to be imported by essentially all other files"""
+
 # Graphics
 from tkinter import *
 
+# general tools used in other files
 import itertools
-
 import sys
 
-# Database
+# Database -- used in game.py, which imports this file
 import sqlite3
 import atexit
 
@@ -14,40 +16,35 @@ from time import *
 
 # Data Visualization
 import matplotlib.pyplot as plt
-
-# Arrays
-import numpy as np
-
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import TimedAnimation
 
-import threading
+# To be used in modeTemplate.py
 import queue
 
-MAX_FRAMES = 3000
-PREDICTION_TIME = 1
-SLOPERANGE = 2
+# Global constants
+MAX_FRAMES = 3000 # stop the animation after 300 seconds
+PREDICTION_TIME = 1 # how many seconds ahead we are predicting
+SLOPERANGE = 2 # the number of frames over which we calculate the slope; right now it is at the lowest possible value
 
-HYPER_BETA_APP = 10
+# Hyperparameters for application of parameters -- changing these values will affect how much the curves will fluctuate at a given parameter value
+HYPER_BETA_APP = 2
 HYPER_BETA_APP_INIT = .01
 HYPER_EP_APP = 5
-# HYPER_ALPH_APP = 10
+# HYPER_ALPH_APP = 10 -- commented because we are no longer using alpha/reinforcement, left in just in case we want to reimplement
 HYPER_RESURG_IMMED_APP = 5
 HYPER_RESURG_DELAY_APP = 5
 
-HYPER_EP_CHANGE = 10
+# Hyperparameters for changing parameters -- changing these values will affect how quickly the parameters change value in response to frequency profile feedback
+HYPER_EP_CHANGE = 5
 # HYPER_ALPH_CHANGE = 30
 HYPER_RESURG_CHANGE = 5
 HYPER_AUTO_CHANGE = 10
-HYPER_BETA_CHANGE = 100
+HYPER_BETA_CHANGE = 20
 
-HYPER_DROP_SUBTRACT = 0.01
-HYPER_DROP_LENGTH = 3
-
-# table name: FreqProf
-# table columns: id (int -- primary key), B1 (int), B2 (int), B3 (int), B4 (int), B5, time (REAL), mode, name, trial
-
-# Cursor.execute('CREATE TABLE FreqProf (id INTEGER PRIMARY KEY AUTOINCREMENT, B1 INTEGER, B2 INTEGER, B3 INTEGER, B4 INTEGER, B5 INTEGER, time REAL, mode TEXT, name TEXT, trial TEXT)')
+# Hyperparameters for rule changes 
+HYPER_DROP_SUBTRACT = 0.01 # not in use right now, the value we subtract from a falling curve after a rule change (now we are just removing dominance)
+HYPER_DROP_LENGTH = 3 # the amount of time that the dominance effect is forcefully subdued after a rule change
 
 
 # Game display: canvas, buttons, menu, etc.
@@ -116,9 +113,11 @@ class Screen(Tk):
         self.btnG.place(x='325', y='30')
         self.btnY.place(x='450', y='30')
 
+        # in case something goes wrong the researcher can tell the user to click this button
         self.stop = Button(self, width='9', height='4', bg='red', text="Stop Graph", command=self.stopGraph)
         self.stop.place(x='1200', y='25')
 
+    # stops the predictions
     def stopGraph(self):
         self.event_generate("<<stopGraph>>")
     
@@ -143,7 +142,7 @@ class Screen(Tk):
     def do_nothing(self):
         pass
 
-# Timer starts running when a game mode begins, keeps track of how much time has elapsed
+# Timer starts running when a game mode begins and the first button is clicked, keeps track of how much time has elapsed
 class Timer:
     def __init__(self):
         self.start_time = time()
@@ -152,6 +151,7 @@ class Timer:
         elapsed = current_time - self.start_time
         return elapsed
 
+# rounds down to the nearest tenth
 def truncate_after_first_decimal(number):
     str_number = str(number)
     decimal_index = str_number.find('.')
@@ -161,6 +161,9 @@ def truncate_after_first_decimal(number):
         return float(truncated_number)
     else:
         return number
+
+
+""" Record functions store data in the FreqProf database, which is no longer really used for anything but good to have the raw data somewhere"""
 
 # Records blue botton clicks
 def record_blue(Cursor, freqprof, timer, game_mode, name, trial):
@@ -214,6 +217,7 @@ def record_yellow(Cursor, freqprof, timer, game_mode, name, trial):
     Cursor.execute('INSERT INTO FreqProf(B1, B2, B3, B4, mode, name, time, trial) VALUES(0, 0, 0, 1, ?, ?, ?, ?)', (game_mode, name, cur_time, trial))
     freqprof.commit()
 
+# Whenever a tenth of a second passes with no button clicks, this function is called
 def record_none(Cursor, freqprof, timer, game_mode, name, trial):
     
     Cursor.execute('SELECT time FROM FreqProf WHERE name=? AND mode=? and trial=? ORDER BY id DESC LIMIT 1', (name, game_mode, trial))

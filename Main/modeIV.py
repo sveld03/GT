@@ -1,5 +1,6 @@
 from modeTemplate import *
 
+# Red, yellow, red, yellow -- move functions 1/2 distance
 class ModeIV(ModeTemplate):
     def __init__(self, freqprof, cursor, screen, timer, window):
         super().__init__(freqprof, cursor, screen, timer, window)
@@ -7,6 +8,7 @@ class ModeIV(ModeTemplate):
         self.yellowCounter = 0
         self.redCounter = 0
 
+    # Red button moves the dot in the 1st quarter and 3rd quarter, signalling a drop when it stops working
     def move_red(self):
         super().move_red()
         if self.redCounter <= 15:
@@ -22,7 +24,7 @@ class ModeIV(ModeTemplate):
                 self.redCounter += 1
                 self.screen.event_generate("<<redDrop>>")
 
-    
+    # Yellow button moves the dot in the 2nd quarter and 4th quarter, signalling a drop when it stops working
     def move_yellow(self):
         super().move_yellow()
         if self.redCounter > 15:
